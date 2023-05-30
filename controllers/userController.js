@@ -24,7 +24,6 @@ const verifyUserAndOtpSend = async (req, res, next) => {
             res.json({ otpSend: false })
         }
     } catch (error) {
-        console.log(error.message)
         next(error)
     }
 }
@@ -57,11 +56,9 @@ const verifyOtp = async (req, res, next) => {
                 }
             })
     } catch (error) {
-        console.log(error.message)
         next(error)
     }
 }
-
 
 const handleUserLogin = async (req, res) => {
     try {
@@ -87,14 +84,23 @@ const handleUserLogin = async (req, res) => {
             res.json({ message: "invalid email or password" })
         }
     } catch (error) {
-        console.log(error.message)
         next(error)
     }
 }
 
+const userAuth = async (req, res, next) => {
+    try {
+        const userId = req.userId
+        const user = await userCollection.findById(userId)
+        res.json({status:true,user})
+    } catch (error) {
+        next(error)
+    }
+}
 
 module.exports = {
     handleUserLogin,
     verifyUserAndOtpSend,
-    verifyOtp
+    verifyOtp,
+    userAuth
 }

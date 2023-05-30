@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
 require('dotenv').config()
 
-
 const dbConnection = async () => {
   mongoose.set("strictQuery", false);
   try {
