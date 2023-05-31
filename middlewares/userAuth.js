@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken")
 
-const userAuth = (req, res,next) => {
+module.exports.userAuth = (req, res,next) => {
   try {
     const token = req.headers.authorization?.split(' ')[1]
     if (!token) {
@@ -18,10 +18,6 @@ const userAuth = (req, res,next) => {
     })
     }
   } catch (error) {
-    console.log(error);
+    next(error);
   }
-}
-
-module.exports = {
-  userAuth
 }

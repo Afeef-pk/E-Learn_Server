@@ -1,18 +1,17 @@
 const express = require('express');
-const cors = require('cors')
 const app = express()
+const cors = require('cors')
 const path = require('path')
-const dbConnect = require('./config/dbConnect')
 const env = require('dotenv').config()
+const dbConnect = require('./config/dbConnect')
 const userRouter = require("./routes/userRoutes")
 const tutorRouter = require("./routes/tutorRoutes")
 const adminRouter = require("./routes/adminRoutes")
 app.use(express.json())
-
 dbConnect()
 
 app.use(cors({
-    origin: 'http://localhost:5173',
+    origin: process.env.CLIENT_URL,
     methods: ['GET', 'POST'],
     credentials: true
 }))
