@@ -1,18 +1,15 @@
-const tutorCollection = require('../models/tutorModel')
 const bcrypt = require('bcrypt')
-const jwtSecert = process.env.JWT_SECERT
 const jwt = require("jsonwebtoken")
+const tutorCollection = require('../models/tutorModel')
+const jwtSecert = process.env.JWT_SECERT
 
-const handleTutorSignUp = async (req, res) => {
+const handleTutorSignUp = async (req, res, next) => {
     try {
-        const { name, phone, email, password, profession,otp } = req.body
+        const { name, phone, email, password, profession, otp } = req.body
         const tutor = await tutorCollection.findOne({ email })
-        if(tutor){
-            res.json({message:"Already Registred"})
-        }else if(!otp){
-            res.json({sendOtp:true})
-        }
-        if(otp){
+        if (tutor) {
+            res.json({ status: false, message: "Already Registred" })
+        } else if (req.body.otp) {
             const encryptedPass = await bcrypt.hash(password, 10)
             tutorCollection.create({
                 name,
@@ -22,9 +19,10 @@ const handleTutorSignUp = async (req, res) => {
                 profession
             })
             res.json({ signed: true })
-        } 
+        } else {
+            res.json({ status: true })
+        }
     } catch (error) {
-        console.log(error.message);
         next(error)
     }
 }

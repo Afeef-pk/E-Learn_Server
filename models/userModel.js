@@ -17,9 +17,6 @@ const userSchema = Schema({
     },
     image:{
         type:String
-    },
-    intersted:{
-        type:String
     }
 })
 

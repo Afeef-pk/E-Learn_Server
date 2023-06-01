@@ -2,14 +2,16 @@ const adminCollection = require('../models/adminModel')
 const bcrypt = require("bcrypt")
 const jwtSecert = process.env.JWT_SECERT
 const jwt = require("jsonwebtoken")
+const userCollection = require('../models/userModel')
+const tutorCollection = require('../models/tutorModel')
 
-const handleAdminLogin = async (req, res,next) => {
+const handleAdminLogin = async (req, res, next) => {
     try {
         const { email, password } = req.body
         const admin = await adminCollection.findOne({ email })
-        if(admin) {
+        if (admin) {
             const isMatch = await bcrypt.compare(password, admin.password)
-            if(isMatch) {
+            if (isMatch) {
                 let token = jwt.sign({
                     adminId: admin._id,
                     adminName: admin.name
@@ -25,7 +27,7 @@ const handleAdminLogin = async (req, res,next) => {
                     message: "Invalid Credentials"
                 })
             }
-        }else{
+        } else {
             res.status(200).json({
                 message: "Invalid Credentials"
             })
@@ -35,7 +37,27 @@ const handleAdminLogin = async (req, res,next) => {
     }
 }
 
+const usersList = async (req, res, next) => {
+    try {
+        const users = await userCollection.find()
+        res.status(200).json({users})
+    } catch (error) {
+        next(error)
+    }
+}
+
+const tutorsList = async (req, res, next) => {
+    try {
+        const tutors = await tutorCollection.find()
+        res.status(200).json({tutors})
+    } catch (error) {
+        next(error)
+    }
+}
+
 
 module.exports = {
-    handleAdminLogin
+    handleAdminLogin,
+    usersList,
+    tutorsList
 }
