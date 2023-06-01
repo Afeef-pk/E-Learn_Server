@@ -56,7 +56,18 @@ const handleTutorLogin = async (req, res, next) => {
     }
 }
 
+const tutorAuth = async (req, res, next) => {
+    try {
+        const tutorId = req.tutorId
+        const tutor = await tutorCollection.findById(tutorId)
+        res.json({status:true})
+    } catch (error) {
+        next(error)
+    }
+}
+
 module.exports = {
     handleTutorSignUp,
-    handleTutorLogin
+    handleTutorLogin,
+    tutorAuth
 }
