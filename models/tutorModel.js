@@ -3,41 +3,48 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
 const tutorSchema = Schema({
-    name:{
-        type:String,
-        required:true
+    name: {
+        type: String,
+        required: true
     },
-    email:{
-        type:String,
-        required:true,
-        unique:true
+    email: {
+        type: String,
+        required: true,
+        unique: true
     },
-    phone:{
-        type:Number,
-        required:true,
-        unique:true
+    phone: {
+        type: Number,
+        required: true,
+        unique: true
     },
-    password:{
-        type:String,
-        required:true
+    password: {
+        type: String,
+        required: true
     },
-    image:{
-        type:String
+    about: {
+        type: String,
+        required: true
     },
-    isApproved:{
-        type:Boolean,
-        default:false
+    certificate:{
+        type: String
     },
-    totalCourses:{
-        type:Number,
-        default:0
+    isApproved: {
+        type: Boolean,
+        default: false
     },
-    status:{
-        type:Boolean,
-        default:true
-    }
+    totalCourses: {
+        type: Number,
+        default: 0
+    },
+    status: {
+        type: Boolean,
+        default: false
+    },
+    image: {
+        type: String
+    },
 },
-{ timestamps: true }
+    { timestamps: true }
 )
 
-module.exports = mongoose.model('Tutor',tutorSchema)
+module.exports = mongoose.model('Tutor', tutorSchema)

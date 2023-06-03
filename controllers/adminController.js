@@ -37,6 +37,16 @@ const handleAdminLogin = async (req, res, next) => {
     }
 }
 
+const dashboard = async (req, res, next) => {
+    try {
+        const userCount = await userCollection.count()
+        const tutorCount = await tutorCollection.count()
+        res.status(200).json({ userCount, tutorCount })
+    } catch (error) {
+        next(error)
+    }
+}
+
 const usersList = async (req, res, next) => {
     try {
         const users = await userCollection.find()
@@ -48,11 +58,11 @@ const usersList = async (req, res, next) => {
 
 const updateUserStatus = async (req, res, next) => {
     try {
-        const {userId} = req.query
+        const { userId } = req.query
         const user = await userCollection.findById(userId)
         const status = !user.status
-        await userCollection.findByIdAndUpdate({ _id:userId},{status})
-        res.status(200).json({message:"Status updated!"})
+        await userCollection.findByIdAndUpdate({ _id: userId }, { status })
+        res.status(200).json({ message: "Status updated!" })
     } catch (error) {
         next(error)
     }
@@ -60,18 +70,33 @@ const updateUserStatus = async (req, res, next) => {
 
 const tutorsList = async (req, res, next) => {
     try {
-        const tutors = await tutorCollection.find()
-        res.status(200).json({ tutors })
+        const approvedTutors = await tutorCollection.find({ isApproved: true });
+        const unapprovedTutors = await tutorCollection.find({ isApproved: false });
+        const tutors = unapprovedTutors.concat(approvedTutors);
+        res.status(200).json({ tutors });
     } catch (error) {
         next(error)
     }
 }
 
-const dashboard = async (req, res, next) => {
+const updateTutorStatus = async (req, res, next) => {
     try {
-        const userCount = await userCollection.count()
-        const tutorCount = await tutorCollection.count()
-        res.status(200).json({ userCount,tutorCount })
+        const { tutorId } = req.query
+        const tutor = await tutorCollection.findById(tutorId)
+        const status = !tutor.status
+        await tutorCollection.findByIdAndUpdate({ _id: tutorId }, { status })
+        res.status(200).json({ message: "Status updated!" })
+    } catch (error) {
+        next(error)
+    }
+}
+
+const getTutorDetails = async (req, res) => {
+    try {
+        const tutorId = req.query.tutorId
+        const tutor = await tutorCollection.findById(tutorId)
+        console.log(tutor);
+        res.status(200).json({ tutor })
     } catch (error) {
         next(error)
     }
@@ -80,8 +105,9 @@ const dashboard = async (req, res, next) => {
 
 module.exports = {
     handleAdminLogin,
+    dashboard,
     usersList,
     updateUserStatus,
     tutorsList,
-    dashboard,
+    updateTutorStatus,
 }

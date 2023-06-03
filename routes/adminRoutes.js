@@ -10,5 +10,6 @@ adminRoute.get('/dashboard',adminController.dashboard)
 adminRoute.get('/users',adminController.usersList)
 adminRoute.patch('/user/status',adminController.updateUserStatus)
 adminRoute.get('/tutors',adminController.tutorsList)
+adminRoute.patch('/tutor/status',adminController.updateTutorStatus)
 
 module.exports=adminRoute
