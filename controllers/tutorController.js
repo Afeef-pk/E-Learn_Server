@@ -5,18 +5,17 @@ const jwtSecert = process.env.JWT_SECERT
 
 const handleTutorSignUp = async (req, res, next) => {
     try {
-        const { name, phone, email, password, profession, otp } = req.body
+        const { name, phone, email, password, otp } = req.body
         const tutor = await tutorCollection.findOne({ email })
         if (tutor) {
             res.json({ status: false, message: "Already Registred" })
-        } else if (req.body.otp) {
+        } else if (otp) {
             const encryptedPass = await bcrypt.hash(password, 10)
             tutorCollection.create({
                 name,
                 email,
                 phone,
-                password: encryptedPass,
-                profession
+                password: encryptedPass
             })
             res.json({ signed: true })
         } else {

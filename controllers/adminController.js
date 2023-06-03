@@ -40,7 +40,19 @@ const handleAdminLogin = async (req, res, next) => {
 const usersList = async (req, res, next) => {
     try {
         const users = await userCollection.find()
-        res.status(200).json({users})
+        res.status(200).json({ users })
+    } catch (error) {
+        next(error)
+    }
+}
+
+const updateUserStatus = async (req, res, next) => {
+    try {
+        const {userId} = req.query
+        const user = await userCollection.findById(userId)
+        const status = !user.status
+        await userCollection.findByIdAndUpdate({ _id:userId},{status})
+        res.status(200).json({message:"Status updated!"})
     } catch (error) {
         next(error)
     }
@@ -49,7 +61,17 @@ const usersList = async (req, res, next) => {
 const tutorsList = async (req, res, next) => {
     try {
         const tutors = await tutorCollection.find()
-        res.status(200).json({tutors})
+        res.status(200).json({ tutors })
+    } catch (error) {
+        next(error)
+    }
+}
+
+const dashboard = async (req, res, next) => {
+    try {
+        const userCount = await userCollection.count()
+        const tutorCount = await tutorCollection.count()
+        res.status(200).json({ userCount,tutorCount })
     } catch (error) {
         next(error)
     }
@@ -59,5 +81,7 @@ const tutorsList = async (req, res, next) => {
 module.exports = {
     handleAdminLogin,
     usersList,
-    tutorsList
+    updateUserStatus,
+    tutorsList,
+    dashboard,
 }

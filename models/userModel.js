@@ -1,23 +1,40 @@
 const mongoose = require('mongoose')
-
 const Schema = mongoose.Schema
 
 const userSchema = Schema({
-    name:{
-        type:String
+    firstName: {
+        type: String,
+        required: true
     },
-    email:{
-        type:String
+    lastName: {
+        type: String,
     },
-    phone:{
-        type:Number
+    email: {
+        type: String,
+        required: true,
+        unique: true
     },
-    password:{
-        type:String
+    phone: {
+        type: Number,
+        required: true
     },
-    image:{
-        type:String
+    password: {
+        type: String,
+        required: true
+    },
+    image: {
+        type: String,
+    },
+    totalPurchased: {
+        type: Number,
+        default: 0
+    },
+    status: {
+        type: Boolean,
+        default: true
     }
-})
+},
+    { timestamps: true }
+)
 
-module.exports = mongoose.model('user',userSchema)
+module.exports = mongoose.model('User', userSchema)

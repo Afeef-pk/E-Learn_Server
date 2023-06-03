@@ -5,17 +5,17 @@ const CourseSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    about:{
+    about: {
         type: String,
         required: true,
     },
-    teacher:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref: 'tutor',
-        required:true,
+    teacher: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Tutor',
+        required: true,
     },
     category: {
-        type: String,
+        type: mongoose.Schema.Types.objectId,
         required: true
     },
     duration: {
@@ -26,15 +26,7 @@ const CourseSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    price:{
-        type: Number,
-        required: true
-    },
-    teacherRevenue:{
-        type:Number,
-        required:true
-    },
-    adminRevenue:{
+    price: {
         type: Number,
         required: true
     },
@@ -42,30 +34,19 @@ const CourseSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    course: [
-        {
-            chapter:String,
-            image:String,
-            lessons:[
-                {
-                    chapterName:String,
-                    lessonName:String,
-                    videoUrl:String 
-                }
-            ]
-        }
-    ],
-    image:{
-        type: Object,
+    courseURL: {
+        type: String,
+    },
+    image: {
+        type: String,
         required: true
     },
-    status:{
-        type:Boolean,
-        default:true,
-        required:true,
+    status: {
+        type: Boolean,
+        default: false,
     },
     createdAt: { type: Date, default: Date.now },
 })
 
 
-module.exports = mongoose.model("Courses", CourseSchema);
+module.exports = mongoose.model("Course", CourseSchema);
