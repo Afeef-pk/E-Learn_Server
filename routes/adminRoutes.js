@@ -6,10 +6,10 @@ const {adminAuth} = require('../middlewares/adminAuth')
 adminRoute.post('/',adminController.handleAdminLogin)
 adminRoute.get('/auth',adminAuth)
 adminRoute.get('/dashboard',adminController.dashboard)
-
 adminRoute.get('/users',adminController.usersList)
 adminRoute.patch('/user/status',adminController.updateUserStatus)
 adminRoute.get('/tutors',adminController.tutorsList)
 adminRoute.patch('/tutor/status',adminController.updateTutorStatus)
+adminRoute.get('/tutor/view',adminController.getTutorDetails)
 
 module.exports=adminRoute

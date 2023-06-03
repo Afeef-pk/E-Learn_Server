@@ -95,7 +95,6 @@ const getTutorDetails = async (req, res) => {
     try {
         const tutorId = req.query.tutorId
         const tutor = await tutorCollection.findById(tutorId)
-        console.log(tutor);
         res.status(200).json({ tutor })
     } catch (error) {
         next(error)
@@ -110,4 +109,5 @@ module.exports = {
     updateUserStatus,
     tutorsList,
     updateTutorStatus,
+    getTutorDetails,
 }

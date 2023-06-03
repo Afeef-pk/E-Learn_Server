@@ -30,7 +30,7 @@ const verifyUserAndOtpSend = async (req, res, next) => {
 
 const verifyOtp = async (req, res, next) => {
     try {
-        const { firstName,lastName, email, phone, password, intersted } = req.body.userData
+        const { firstName, lastName, email, phone, password, intersted } = req.body.userData
         client.verify.v2.services(serviceSid)
             .verificationChecks
             .create({ to: '+91' + phone, code: req.body.code })
@@ -60,12 +60,12 @@ const verifyOtp = async (req, res, next) => {
     }
 }
 
-const handleUserLogin = async (req, res,next) => {
+const handleUserLogin = async (req, res, next) => {
     try {
         const { email, password } = req.body
         let user = await userCollection.findOne({ email })
         if (user) {
-            if(!user.status) return res.json({ message: "You have no permission"})
+            if (!user.status) return res.json({ message: "You have no permission" })
             const passwordMatch = await bcrypt.compare(password, user.password)
             if (passwordMatch) {
                 let token = jwt.sign({
@@ -92,8 +92,12 @@ const handleUserLogin = async (req, res,next) => {
 const userAuth = async (req, res, next) => {
     try {
         const userId = req.userId
-        const user = await userCollection.findById(userId)
-        res.json({status:true,user})
+        const user = await userCollection.findOne({ _id: userId, status: true })
+        if (user) {
+            res.json({ status: true })
+        }else{
+            res.json({ status: false })
+        }
     } catch (error) {
         next(error)
     }
