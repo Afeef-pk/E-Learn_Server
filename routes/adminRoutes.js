@@ -11,5 +11,6 @@ adminRoute.patch('/user/status',adminController.updateUserStatus)
 adminRoute.get('/tutors',adminController.tutorsList)
 adminRoute.patch('/tutor/status',adminController.updateTutorStatus)
 adminRoute.post('/tutor/view',adminController.getTutorDetails)
+adminRoute.get('/courses',adminController.getCourse)
 
 module.exports=adminRoute

@@ -10,12 +10,12 @@ const CourseSchema = new mongoose.Schema({
         required: true,
     },
     teacher: {
-       type: mongoose.Schema.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'Tutor',
     },
     category: {
         type: String,
-        required: true
+        //required: true
     },
     duration: {
         type: String,
@@ -38,7 +38,10 @@ const CourseSchema = new mongoose.Schema({
     },
     imageURL: {
         type: String,
-        
+    },
+    isApproved: {
+        type: Boolean,
+        default: false
     },
     status: {
         type: Boolean,

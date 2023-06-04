@@ -4,6 +4,7 @@ const jwtSecert = process.env.JWT_SECERT
 const jwt = require("jsonwebtoken")
 const userCollection = require('../models/userModel')
 const tutorCollection = require('../models/tutorModel')
+const courseCollection = require('../models/courseModel')
 
 const handleAdminLogin = async (req, res, next) => {
     try {
@@ -109,6 +110,14 @@ const getTutorDetails = async (req, res, next) => {
     }
 }
 
+const getCourse = async (req, res, next) => {
+    try {
+        const course = await courseCollection.find()
+        res.status(200).json({ course })
+    } catch (error) {
+        next(error)
+    }
+}
 
 module.exports = {
     handleAdminLogin,
@@ -118,4 +127,5 @@ module.exports = {
     tutorsList,
     updateTutorStatus,
     getTutorDetails,
+    getCourse
 }
