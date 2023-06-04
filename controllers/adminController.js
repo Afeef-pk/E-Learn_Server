@@ -93,22 +93,17 @@ const updateTutorStatus = async (req, res, next) => {
 
 const getTutorDetails = async (req, res, next) => {
     try {
-        console.log(req.query);
-        const tutorId = req.query.tutorId
-        if (req.query.tutorId && req.query.status===false) {
-            console.log('list');
-            var tutor = await tutorCollection.findById(tutorId)
+        const {tutorId,status} = req.body
+        if (tutorId && status===false) {
+            const tutor = await tutorCollection.findById(tutorId)
             return res.status(200).json({ tutor })
         }
-        if(req.query.status){
-            console.log('here already');
+        if(status){
+            const tutor = await tutorCollection.findById(tutorId)
             const status = !tutor.isApproved
-            var tutors = await tutorCollection.findByIdAndUpdate({ tutorId },{isApproved:status})
+            await tutorCollection.findByIdAndUpdate({ _id:tutorId },{isApproved:status,status:true})
             return res.status(200).json({ message:"Successfully Approved" })
         }
-        
-        
-
     } catch (error) {
         next(error)
     }

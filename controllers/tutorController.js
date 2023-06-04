@@ -33,6 +33,7 @@ const handleTutorLogin = async (req, res, next) => {
         const { email, password } = req.body
         let tutor = await tutorCollection.findOne({ email })
         if (tutor) {
+            if(!tutor.status) return res.status(200).json({ message: "You have no permission" })
             const passwordMatch = await bcrypt.compare(password, tutor.password)
             if (passwordMatch) {
                 let token = jwt.sign({
