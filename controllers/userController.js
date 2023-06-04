@@ -91,12 +91,13 @@ const handleUserLogin = async (req, res, next) => {
 
 const userAuth = async (req, res, next) => {
     try {
-        const userId = req.userId
-        const user = await userCollection.findOne({ _id: userId, status: true })
-        if (user) {
-            res.json({ status: true })
+      console.log('a');
+        const decoded = req.decoded
+        const user = await userCollection.findOne({ _id: decoded.userId, status: true })
+        if(decoded.exp * 1000 > Date.now()&&user){
+            res.json({ status: true,decoded })
         }else{
-            res.json({ status: false })
+            res.json({ status: false,message:"Session expired!, Please Signin."})
         }
     } catch (error) {
         next(error)

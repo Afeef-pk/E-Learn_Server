@@ -10,7 +10,6 @@ const handleTutorSignUp = async (req, res, next) => {
         if (tutor) {
             res.json({ status: false, message: "Already Registred" })
         } else if (otp) {
-            console.log(req.body.imageUrl);
             const encryptedPass = await bcrypt.hash(password, 10)
             tutorCollection.create({
                 name,
