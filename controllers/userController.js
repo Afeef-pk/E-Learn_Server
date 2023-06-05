@@ -88,14 +88,14 @@ const handleUserLogin = async (req, res, next) => {
     }
 }
 
-const userAuth = async (req, res, next) => {
+const userAuthentication = async (req, res, next) => {
     try {
         const decoded = req.decoded
         const user = await userCollection.findOne({ _id: decoded.userId, status: true })
         if (decoded.exp * 1000 > Date.now() && user) {
             return res.status(200).json({ status: true })
         } else {
-            return res.status(200).json({ status: false, message: "Session expired!, Please Signin." })
+            return res.status(401).json({ status: false, message: "Session expired!, Please Signin." })
         }
     } catch (error) {
         next(error)
@@ -106,5 +106,5 @@ module.exports = {
     handleUserLogin,
     verifyUserAndOtpSend,
     verifyOtp,
-    userAuth
+    userAuthentication
 }

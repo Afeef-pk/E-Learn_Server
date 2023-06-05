@@ -64,7 +64,7 @@ const tutorAuth = async (req, res, next) => {
         if(decoded.exp * 1000 > Date.now()&&tutor){
            return res.status(200).json({ status: true})
         }else{
-            return res.status(200).json({ status: false,message:"Session expired!, Please Signin."})
+            return res.status(401).json({ status: false,message:"Session expired!, Please Signin."})
         }
     } catch (error) {
         next(error)

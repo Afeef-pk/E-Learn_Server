@@ -51,7 +51,7 @@ const dashboard = async (req, res, next) => {
 
 const usersList = async (req, res, next) => {
     try {
-        const users = await userCollection.find({}, { password: 0, _id: 0 })
+        const users = await userCollection.find({}, { password: 0})
         res.status(200).json({ users })
     } catch (error) {
         next(error)
@@ -72,8 +72,8 @@ const updateUserStatus = async (req, res, next) => {
 
 const tutorsList = async (req, res, next) => {
     try {
-        const approvedTutors = await tutorCollection.find({ isApproved: true }, { password: 0, _id: 0 });
-        const unapprovedTutors = await tutorCollection.find({ isApproved: false }, { password: 0, _id: 0 });
+        const approvedTutors = await tutorCollection.find({ isApproved: true }, { password: 0 });
+        const unapprovedTutors = await tutorCollection.find({ isApproved: false }, { password: 0 });
         const tutors = unapprovedTutors.concat(approvedTutors);
         res.status(200).json({ tutors });
     } catch (error) {
