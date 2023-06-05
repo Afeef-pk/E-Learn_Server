@@ -2,9 +2,9 @@ const courseModel = require('../models/courseModel')
 
 const uploadCourse = async (req, res, next) => {
     try {
-        console.log(req.body);
         const { name, about, duration, language, price, description, category} = req.body.courseData
         const imageURL = req.body.imageURL
+        const courseURL = req.body.courseURL
         const coure = courseModel.create({
             name,
             about,
@@ -13,7 +13,8 @@ const uploadCourse = async (req, res, next) => {
             price,
             description,
             category,
-            imageURL
+            imageURL,
+            courseURL
         })
         res.status(200).json({status: true})
     } catch (error) {

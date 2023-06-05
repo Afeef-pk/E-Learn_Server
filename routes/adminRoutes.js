@@ -1,16 +1,19 @@
 const express = require('express')
-const adminRoute= express.Router()
-const adminController = require('../controllers/adminController')
-const {adminAuth} = require('../middlewares/adminAuth')
+const adminRoute = express.Router()
+const { handleAdminLogin, dashboard, usersList, updateUserStatus, tutorsList, updateTutorStatus, tutorViewAndApprove, getCourse, courseViewAndApprove,courseManage } = require('../controllers/adminController')
+const { adminAuth } = require('../middlewares/adminAuth')
 
-adminRoute.post('/',adminController.handleAdminLogin)
-adminRoute.get('/auth',adminAuth)
-adminRoute.get('/dashboard',adminController.dashboard)
-adminRoute.get('/users',adminController.usersList)
-adminRoute.patch('/user/status',adminController.updateUserStatus)
-adminRoute.get('/tutors',adminController.tutorsList)
-adminRoute.patch('/tutor/status',adminController.updateTutorStatus)
-adminRoute.post('/tutor/view',adminController.getTutorDetails)
-adminRoute.get('/courses',adminController.getCourse)
+adminRoute.post('/', handleAdminLogin)
+adminRoute.get('/auth', adminAuth)
+adminRoute.get('/dashboard', dashboard)
+adminRoute.get('/users', usersList)
+adminRoute.patch('/user/status', updateUserStatus)
+adminRoute.get('/tutors', tutorsList)
+adminRoute.patch('/tutor/status', updateTutorStatus)
+adminRoute.post('/tutor/view', tutorViewAndApprove)
+adminRoute.get('/courses', getCourse)
+adminRoute.post('/course/view', courseViewAndApprove)
+adminRoute.post('/course/manage', courseManage)
 
-module.exports=adminRoute
+
+module.exports = adminRoute

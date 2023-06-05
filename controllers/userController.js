@@ -18,10 +18,10 @@ const verifyUserAndOtpSend = async (req, res, next) => {
                 .create({ to: '+91' + phone, channel: "sms" })
                 .then((verification) => {
                     console.log(verification.status)
-                    res.json({ otpSend: true })
+                    return res.status(200).json({ otpSend: true })
                 })
         } else {
-            res.json({ otpSend: false })
+            return res.status(200).json({ otpSend: false })
         }
     } catch (error) {
         next(error)
@@ -36,7 +36,6 @@ const verifyOtp = async (req, res, next) => {
             .create({ to: '+91' + phone, code: req.body.code })
             .then((verification) => {
                 if (verification.status === "approved") {
-                    console.log(verification.status);
                     (async () => {
                         const encryptedPasword = await bcrypt.hash(password, 10)
                         userCollection
@@ -48,11 +47,11 @@ const verifyOtp = async (req, res, next) => {
                                 password: encryptedPasword
                             })
                             .then((data) => {
-                                res.json({ verified: true })
+                                return res.status(200).json({ verified: true })
                             })
                     })()
                 } else {
-                    res.json({ verified: false })
+                    return res.status(200).json({ verified: false })
                 }
             })
     } catch (error) {
@@ -74,15 +73,15 @@ const handleUserLogin = async (req, res, next) => {
                 }, jwtSecert, {
                     expiresIn: "1d",
                 })
-                res.json({
+                return res.status(200).json({
                     message: "Signin Successful...",
                     token
                 })
             } else {
-                res.json({ message: "invalid email or password" })
+                res.status(200).json({ message: "invalid email or password" })
             }
         } else {
-            res.json({ message: "invalid email or password" })
+            res.status(200).json({ message: "invalid email or password" })
         }
     } catch (error) {
         next(error)
@@ -91,13 +90,12 @@ const handleUserLogin = async (req, res, next) => {
 
 const userAuth = async (req, res, next) => {
     try {
-      console.log('a');
         const decoded = req.decoded
         const user = await userCollection.findOne({ _id: decoded.userId, status: true })
-        if(decoded.exp * 1000 > Date.now()&&user){
-            res.json({ status: true,decoded })
-        }else{
-            res.json({ status: false,message:"Session expired!, Please Signin."})
+        if (decoded.exp * 1000 > Date.now() && user) {
+            return res.status(200).json({ status: true })
+        } else {
+            return res.status(200).json({ status: false, message: "Session expired!, Please Signin." })
         }
     } catch (error) {
         next(error)

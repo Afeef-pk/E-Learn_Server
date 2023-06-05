@@ -19,17 +19,17 @@ const handleAdminLogin = async (req, res, next) => {
                 }, jwtSecert, {
                     expiresIn: "1d",
                 })
-                res.status(200).json({
+                return res.status(200).json({
                     message: "Login Successful",
                     token
                 })
             } else {
-                res.status(200).json({
+                return res.status(200).json({
                     message: "Invalid Credentials"
                 })
             }
         } else {
-            res.status(200).json({
+            return res.status(200).json({
                 message: "Invalid Credentials"
             })
         }
@@ -42,7 +42,8 @@ const dashboard = async (req, res, next) => {
     try {
         const userCount = await userCollection.count()
         const tutorCount = await tutorCollection.count()
-        res.status(200).json({ userCount, tutorCount })
+        const courseCount = await courseCollection.count()
+        res.status(200).json({ userCount, tutorCount, courseCount })
     } catch (error) {
         next(error)
     }
@@ -50,7 +51,7 @@ const dashboard = async (req, res, next) => {
 
 const usersList = async (req, res, next) => {
     try {
-        const users = await userCollection.find()
+        const users = await userCollection.find({}, { password: 0, _id: 0 })
         res.status(200).json({ users })
     } catch (error) {
         next(error)
@@ -71,8 +72,8 @@ const updateUserStatus = async (req, res, next) => {
 
 const tutorsList = async (req, res, next) => {
     try {
-        const approvedTutors = await tutorCollection.find({ isApproved: true });
-        const unapprovedTutors = await tutorCollection.find({ isApproved: false });
+        const approvedTutors = await tutorCollection.find({ isApproved: true }, { password: 0, _id: 0 });
+        const unapprovedTutors = await tutorCollection.find({ isApproved: false }, { password: 0, _id: 0 });
         const tutors = unapprovedTutors.concat(approvedTutors);
         res.status(200).json({ tutors });
     } catch (error) {
@@ -92,18 +93,16 @@ const updateTutorStatus = async (req, res, next) => {
     }
 }
 
-const getTutorDetails = async (req, res, next) => {
+const tutorViewAndApprove = async (req, res, next) => {
     try {
-        const {tutorId,status} = req.body
-        if (tutorId && status===false) {
+        const { tutorId, status, tutorView } = req.body
+        if (tutorId && tutorView) {
             const tutor = await tutorCollection.findById(tutorId)
             return res.status(200).json({ tutor })
         }
-        if(status){
-            const tutor = await tutorCollection.findById(tutorId)
-            const status = !tutor.isApproved
-            await tutorCollection.findByIdAndUpdate({ _id:tutorId },{isApproved:status,status:true})
-            return res.status(200).json({ message:"Successfully Approved" })
+        if (!tutorView) {
+            await tutorCollection.findByIdAndUpdate({ _id: tutorId }, { isApproved: status, status })
+            return res.status(200).json({ message: "Successfully Approved" })
         }
     } catch (error) {
         next(error)
@@ -119,6 +118,34 @@ const getCourse = async (req, res, next) => {
     }
 }
 
+const courseManage = async (req, res, next) => {
+    try {
+        const courseId = req.body.courseId
+        const course = await courseCollection.findById(courseId)
+        const newStatus = !course.status
+        await courseCollection.findByIdAndUpdate({ _id: courseId }, { status: newStatus })
+        res.status(200).json({ message: "Status updated" })
+    } catch (error) {
+        next(error)
+    }
+}
+
+const courseViewAndApprove = async (req, res, next) => {
+    try {
+        const { courseId, status } = req.body
+        if (courseId && !status) {
+            const course = await courseCollection.findById(courseId)
+            return res.status(200).json({ course })
+        }
+        if (status) {
+            await courseCollection.findByIdAndUpdate({ _id: courseId }, { isApproved: status, status })
+            res.status(200).json({ status: true })
+        }
+    } catch (error) {
+        next(error)
+    }
+}
+
 module.exports = {
     handleAdminLogin,
     dashboard,
@@ -126,6 +153,8 @@ module.exports = {
     updateUserStatus,
     tutorsList,
     updateTutorStatus,
-    getTutorDetails,
-    getCourse
+    tutorViewAndApprove,
+    getCourse,
+    courseManage,
+    courseViewAndApprove
 }
