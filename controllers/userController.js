@@ -30,7 +30,10 @@ const verifyUserAndOtpSend = async (req, res, next) => {
 
 const verifyOtp = async (req, res, next) => {
     try {
-        const { firstName, lastName, email, phone, password, intersted } = req.body.userData
+        if(req.body.googleAuth){
+
+        }else{
+            const { firstName, lastName, email, phone, password, intersted } = req.body.userData
         client.verify.v2.services(serviceSid)
             .verificationChecks
             .create({ to: '+91' + phone, code: req.body.code })
@@ -54,6 +57,7 @@ const verifyOtp = async (req, res, next) => {
                     return res.status(200).json({ verified: false })
                 }
             })
+        }
     } catch (error) {
         next(error)
     }
