@@ -14,7 +14,9 @@ const uploadCourse = async (req, res, next) => {
             description,
             category,
             imageURL,
-            courseURL
+            courseURL,
+            teacher:req.decoded.tutorId,
+            category
         })
         res.status(200).json({status: true})
     } catch (error) {

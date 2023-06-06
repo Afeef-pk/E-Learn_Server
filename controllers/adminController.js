@@ -5,6 +5,7 @@ const jwt = require("jsonwebtoken")
 const userCollection = require('../models/userModel')
 const tutorCollection = require('../models/tutorModel')
 const courseCollection = require('../models/courseModel')
+const Category = require('../models/categoryModel')
 
 const handleAdminLogin = async (req, res, next) => {
     try {
@@ -51,7 +52,7 @@ const dashboard = async (req, res, next) => {
 
 const usersList = async (req, res, next) => {
     try {
-        const users = await userCollection.find({}, { password: 0})
+        const users = await userCollection.find({}, { password: 0 })
         res.status(200).json({ users })
     } catch (error) {
         next(error)
@@ -134,7 +135,7 @@ const courseViewAndApprove = async (req, res, next) => {
     try {
         const { courseId, status } = req.body
         if (courseId && !status) {
-            const course = await courseCollection.findById(courseId)
+            const course = await courseCollection.findById(courseId).populate('category')
             return res.status(200).json({ course })
         }
         if (status) {
@@ -146,6 +147,20 @@ const courseViewAndApprove = async (req, res, next) => {
     }
 }
 
+const addCategory = async (req, res, next) => {
+    try {
+        if(req.body.categoryName){
+            const name = req.body.categoryName
+            Category.create({
+                name
+            })
+        }
+        const categories = await Category.find()
+        res.status(200).json({ message: "Category Added" ,categories})
+    } catch (error) {
+        next(error)
+    }
+}
 module.exports = {
     handleAdminLogin,
     dashboard,
@@ -156,5 +171,6 @@ module.exports = {
     tutorViewAndApprove,
     getCourse,
     courseManage,
-    courseViewAndApprove
+    courseViewAndApprove,
+    addCategory
 }

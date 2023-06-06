@@ -60,8 +60,8 @@ const handleTutorLogin = async (req, res, next) => {
 const tutorAuth = async (req, res, next) => {
     try {
         const decoded = req.decoded
-        const tutor = await tutorCollection.findOne({ _id: decoded.userId, status: true })
-        if(decoded.exp * 1000 > Date.now()&&tutor){
+        const tutor = await tutorCollection.findOne({ _id: decoded.tutorId, status: true })
+        if(decoded.exp * 1000 > Date.now() && tutor){
            return res.status(200).json({ status: true})
         }else{
             return res.status(401).json({ status: false,message:"Session expired!, Please Signin."})

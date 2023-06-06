@@ -7,7 +7,7 @@ const {tutorAuth} = require('../middlewares/tutorAuth')
 tutorRoute.post('/signup',tutorController.handleTutorSignUp)
 tutorRoute.post('/signin',tutorController.handleTutorLogin)
 tutorRoute.get('/tutorauth',tutorAuth,tutorController.tutorAuth)
-tutorRoute.post('/upload/course',courseController.uploadCourse)
+tutorRoute.post('/upload/course',tutorAuth,courseController.uploadCourse)
 
 
 module.exports=tutorRoute
