@@ -6,7 +6,7 @@ const authToken = process.env.TWILIO_AUTH_TOKEN
 const serviceSid = process.env.SERVICE_SID
 const client = require('twilio')(accountSid, authToken);
 const jwtSecert = process.env.JWT_SECERT
-
+const courseCollection = require('../models/courseModel')
 
 const verifyUserAndOtpSend = async (req, res, next) => {
     try {
@@ -30,33 +30,53 @@ const verifyUserAndOtpSend = async (req, res, next) => {
 
 const verifyOtp = async (req, res, next) => {
     try {
-        if(req.body.googleAuth){
-
-        }else{
-            const { firstName, lastName, email, phone, password, intersted } = req.body.userData
-        client.verify.v2.services(serviceSid)
-            .verificationChecks
-            .create({ to: '+91' + phone, code: req.body.code })
-            .then((verification) => {
-                if (verification.status === "approved") {
-                    (async () => {
-                        const encryptedPasword = await bcrypt.hash(password, 10)
-                        userCollection
-                            .create({
-                                firstName,
-                                lastName,
-                                email,
-                                phone,
-                                password: encryptedPasword
-                            })
-                            .then((data) => {
-                                return res.status(200).json({ verified: true })
-                            })
-                    })()
-                } else {
-                    return res.status(200).json({ verified: false })
-                }
+        const { firstName, lastName, email, phone, password } = req.body.userData
+        if (req.body.googleAuth) {
+            let user = await userCollection.findOne({ email })
+            if (!user) {
+                user = await userCollection
+                    .create({
+                        firstName,
+                        lastName,
+                        email,
+                        phone,
+                        password
+                    })
+            }
+            let token = jwt.sign({
+                userId: user._id,
+                userName: user.name
+            }, jwtSecert, {
+                expiresIn: "1d",
             })
+            return res.status(200).json({
+                message: "Signin Successful...",
+                token
+            })
+        } else {
+            client.verify.v2.services(serviceSid)
+                .verificationChecks
+                .create({ to: '+91' + phone, code: req.body.code })
+                .then((verification) => {
+                    if (verification.status === "approved") {
+                        (async () => {
+                            const encryptedPasword = await bcrypt.hash(password, 10)
+                            userCollection
+                                .create({
+                                    firstName,
+                                    lastName,
+                                    email,
+                                    phone,
+                                    password: encryptedPasword
+                                })
+                                .then((data) => {
+                                    return res.status(200).json({ verified: true })
+                                })
+                        })()
+                    } else {
+                        return res.status(200).json({ verified: false })
+                    }
+                })
         }
     } catch (error) {
         next(error)
@@ -68,7 +88,7 @@ const handleUserLogin = async (req, res, next) => {
         const { email, password } = req.body
         let user = await userCollection.findOne({ email })
         if (user) {
-            if (!user.status) return res.json({ message: "You have no permission" })
+            if (!user.status) return res.status(200).json({ message: "You have no permission" })
             const passwordMatch = await bcrypt.compare(password, user.password)
             if (passwordMatch) {
                 let token = jwt.sign({
@@ -106,9 +126,19 @@ const userAuthentication = async (req, res, next) => {
     }
 }
 
+const homePageCourses = async (req, res, next) => {
+    try {
+        const course = await courseCollection.find({ status: true }).populate('teacher').sort({createdAt:-1}).limit(4)
+        return res.status(200).json({ course })
+    } catch (error) {
+        next(error)
+    }
+}
+
 module.exports = {
     handleUserLogin,
     verifyUserAndOtpSend,
     verifyOtp,
-    userAuthentication
+    userAuthentication,
+    homePageCourses
 }
