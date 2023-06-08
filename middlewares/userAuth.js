@@ -8,8 +8,7 @@ module.exports.userAuth = (req, res, next) => {
     } else {
       jwt.verify(token, process.env.JWT_SECERT, (err, decoded) => {
         if (err) {
-          console.log(err)
-          res.status(401).json({ status: false, message: "failed to authenticate" })
+          res.status(401).json({ status: false, message: "Session expired please login" })
         } else {
           req.decoded = decoded
           next()

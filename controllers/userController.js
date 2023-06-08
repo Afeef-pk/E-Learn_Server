@@ -126,19 +126,11 @@ const userAuthentication = async (req, res, next) => {
     }
 }
 
-const homePageCourses = async (req, res, next) => {
-    try {
-        const course = await courseCollection.find({ status: true }).populate('teacher').sort({createdAt:-1}).limit(4)
-        return res.status(200).json({ course })
-    } catch (error) {
-        next(error)
-    }
-}
+
 
 module.exports = {
     handleUserLogin,
     verifyUserAndOtpSend,
     verifyOtp,
     userAuthentication,
-    homePageCourses
 }
