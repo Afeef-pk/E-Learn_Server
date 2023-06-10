@@ -1,6 +1,6 @@
 const express = require('express')
 const userRoute= express.Router()
-const {userAuthentication,verifyUserAndOtpSend,verifyOtp,handleUserLogin} = require('../controllers/userController')
+const {updateUserProfile,getUserProfile,userAuthentication,verifyUserAndOtpSend,verifyOtp,handleUserLogin} = require('../controllers/userController')
 const {userAuth} = require('../middlewares/userAuth')
 const {homePageCourses,courseList,courseView} = require('../controllers/courseController')
 
@@ -11,6 +11,9 @@ userRoute.post('/signin',handleUserLogin)
 userRoute.get('/home-course',homePageCourses)
 userRoute.get('/course',courseList)
 userRoute.get('/course-details/:courseId',courseView)
+userRoute.get('/profile',userAuth,getUserProfile)
+userRoute.post('/update/profile',userAuth,updateUserProfile)
+
 
 
 

@@ -6,7 +6,6 @@ const authToken = process.env.TWILIO_AUTH_TOKEN
 const serviceSid = process.env.SERVICE_SID
 const client = require('twilio')(accountSid, authToken);
 const jwtSecert = process.env.JWT_SECERT
-const courseCollection = require('../models/courseModel')
 
 const verifyUserAndOtpSend = async (req, res, next) => {
     try {
@@ -86,7 +85,7 @@ const verifyOtp = async (req, res, next) => {
 const handleUserLogin = async (req, res, next) => {
     try {
         const { email, password } = req.body
-        let user = await userCollection.findOne({ email })
+        const user = await userCollection.findOne({ email })
         if (user) {
             if (!user.status) return res.status(200).json({ message: "You have no permission" })
             const passwordMatch = await bcrypt.compare(password, user.password)
@@ -127,10 +126,50 @@ const userAuthentication = async (req, res, next) => {
 }
 
 
+const getUserProfile = async (req, res) => {
+    try {
+        const { userId } = req.decoded
+        await userCollection.findOne({ _id: userId }, { password: 0 }).then((response) => {
+            return res.status(200).json({ user: response })
+        }).catch((error) => {
+            return res.status(500).json({ message: "error fetching data" })
+        })
+    } catch (error) {
+        next(error)
+    }
 
+}
+
+const updateUserProfile = async (req, res) => {
+    try {
+        const { userId } = req.decoded
+        if (req.body.newPassword) {
+            const { oldPassword, newPassword } = req.body
+            const user = await userCollection.findById(userId)
+            const passwordMatch = await bcrypt.compare(oldPassword, user.password)
+            if (passwordMatch) {
+                const encryptPasword = await bcrypt.hash(newPassword, 10)
+                await userCollection.findOneAndUpdate({ _id: userId }, { password:encryptPasword })
+                return res.status(200).json({ message: "Password successfully updated" })
+            }else{
+                return res.status(401).json({ message: "Incorrect Old Password" })
+            }
+        }
+        const { firstName, lastName, email, image } = req.body
+        await userCollection.findOneAndUpdate({ _id: userId }, { firstName, lastName, email, image }).then((response) => {
+            return res.status(200).json({ user: response, message: "Profile Updated Successfully" })
+        }).catch((error) => {
+            return res.status(500).json({ message: "error updating profile" })
+        })
+    } catch (error) {
+        next(error)
+    }
+}
 module.exports = {
     handleUserLogin,
     verifyUserAndOtpSend,
     verifyOtp,
     userAuthentication,
+    getUserProfile,
+    updateUserProfile
 }
