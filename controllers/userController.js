@@ -29,17 +29,17 @@ const verifyUserAndOtpSend = async (req, res, next) => {
 
 const verifyOtp = async (req, res, next) => {
     try {
-        const { firstName, lastName, email, phone, password } = req.body.userData
+        const { name, email, phone, password,image } = req.body.userData
         if (req.body.googleAuth) {
             let user = await userCollection.findOne({ email })
             if (!user) {
                 user = await userCollection
                     .create({
-                        firstName,
-                        lastName,
+                        name,
                         email,
                         phone,
-                        password
+                        password,
+                        image
                     })
             }
             let token = jwt.sign({
@@ -62,8 +62,7 @@ const verifyOtp = async (req, res, next) => {
                             const encryptedPasword = await bcrypt.hash(password, 10)
                             userCollection
                                 .create({
-                                    firstName,
-                                    lastName,
+                                   name,
                                     email,
                                     phone,
                                     password: encryptedPasword
@@ -114,9 +113,9 @@ const handleUserLogin = async (req, res, next) => {
 const userAuthentication = async (req, res, next) => {
     try {
         const decoded = req.decoded
-        const user = await userCollection.findOne({ _id: decoded.userId, status: true })
+        const user = await userCollection.findOne({ _id: decoded.userId, status: true },{image:1,_id:0})
         if (decoded.exp * 1000 > Date.now() && user) {
-            return res.status(200).json({ status: true })
+            return res.status(200).json({ status: true,user })
         } else {
             return res.status(401).json({ status: false, message: "Session expired!, Please Signin." })
         }
