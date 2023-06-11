@@ -37,6 +37,18 @@ const CourseSchema = new mongoose.Schema({
     courseURL: {
         type: String,
     },
+    course: [
+        {
+            chapter:String,
+            lessons:[
+                {
+                    chapterName:String,
+                    lessonName:String,
+                    videoUrl:String 
+                }
+            ]
+        }
+    ],
     imageURL: {
         type: String,
     },
