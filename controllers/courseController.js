@@ -3,9 +3,8 @@ const categoryModal = require('../models/categoryModel')
 
 const uploadCourse = async (req, res, next) => {
     try {
-        const { name, about, duration, language, price, description, category } = req.body.courseData
+        const { name, about, duration, language, price, description, category,course } = req.body.courseData
         const imageURL = req.body.imageURL
-        const courseURL = req.body.courseURL
         const coure = courseModel.create({
             name,
             about,
@@ -15,11 +14,11 @@ const uploadCourse = async (req, res, next) => {
             description,
             category,
             imageURL,
-            courseURL,
             teacher: req.decoded.tutorId,
-            category
-        })
-        res.status(200).json({ status: true })
+            category,
+            course
+        }).then(() => res.status(200).json({ status: true }))
+            .catch(err => res.status(500).json({ message: "failed to upload course" }))
     } catch (error) {
         next(error)
     }

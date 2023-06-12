@@ -1,13 +1,13 @@
 const express = require('express')
 const tutorRoute= express.Router()
-const tutorController = require('../controllers/tutorController')
-const courseController = require('../controllers/courseController')
+const {handleTutorSignUp,handleTutorLogin,tutorAuthVerify,getTutorCourses} = require('../controllers/tutorController')
+const {uploadCourse} = require('../controllers/courseController')
 const {tutorAuth} = require('../middlewares/tutorAuth')
 
-tutorRoute.post('/signup',tutorController.handleTutorSignUp)
-tutorRoute.post('/signin',tutorController.handleTutorLogin)
-tutorRoute.get('/tutorauth',tutorAuth,tutorController.tutorAuth)
-tutorRoute.post('/upload/course',tutorAuth,courseController.uploadCourse)
-
+tutorRoute.post('/signup',handleTutorSignUp)
+tutorRoute.post('/signin',handleTutorLogin)
+tutorRoute.get('/tutorauth',tutorAuth,tutorAuthVerify)
+tutorRoute.post('/upload/course',tutorAuth,uploadCourse)
+tutorRoute.get('/all-course/',tutorAuth,getTutorCourses)
 
 module.exports=tutorRoute

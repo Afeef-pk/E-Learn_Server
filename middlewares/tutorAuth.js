@@ -8,7 +8,6 @@ module.exports.tutorAuth = (req, res, next) => {
     } else {
       jwt.verify(token, process.env.JWT_SECERT, (err, decoded) => {
         if (err) {
-          console.log(err)
           res.status(401).json({ status: false, message: "failed to authenticate" })
         } else {
           req.decoded = decoded

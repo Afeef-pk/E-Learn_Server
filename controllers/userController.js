@@ -16,7 +16,6 @@ const verifyUserAndOtpSend = async (req, res, next) => {
                 .verifications
                 .create({ to: '+91' + phone, channel: "sms" })
                 .then((verification) => {
-                    console.log(verification.status)
                     return res.status(200).json({ otpSend: true })
                 })
         } else {
@@ -29,13 +28,14 @@ const verifyUserAndOtpSend = async (req, res, next) => {
 
 const verifyOtp = async (req, res, next) => {
     try {
-        const { name, email, phone, password,image } = req.body.userData
+        const { name,lastName, email, phone, password,image } = req.body.userData
         if (req.body.googleAuth) {
             let user = await userCollection.findOne({ email })
             if (!user) {
                 user = await userCollection
                     .create({
                         name,
+                        lastName,
                         email,
                         phone,
                         password,

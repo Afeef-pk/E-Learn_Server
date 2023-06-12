@@ -124,8 +124,11 @@ const courseManage = async (req, res, next) => {
         const courseId = req.body.courseId
         const course = await courseCollection.findById(courseId)
         const newStatus = !course.status
-        await courseCollection.findByIdAndUpdate({ _id: courseId }, { status: newStatus })
-        res.status(200).json({ message: "Status updated" })
+        await courseCollection.findByIdAndUpdate({ _id: courseId }, { status: newStatus }).then(() => {
+            return res.status(200).json({ message: "Status updated" })
+        }).catch(()=>{
+            return res.status(501).json({ message: "failed to update" })
+        })
     } catch (error) {
         next(error)
     }
@@ -149,14 +152,14 @@ const courseViewAndApprove = async (req, res, next) => {
 
 const addCategory = async (req, res, next) => {
     try {
-        if(req.body.categoryName){
+        if (req.body.categoryName) {
             const name = req.body.categoryName
             Category.create({
                 name
             })
         }
         const categories = await Category.find()
-        res.status(200).json({ message: "Category Added" ,categories})
+        res.status(200).json({ message: "Category Added", categories })
     } catch (error) {
         next(error)
     }
