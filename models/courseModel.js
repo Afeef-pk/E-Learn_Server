@@ -34,9 +34,6 @@ const CourseSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    courseURL: {
-        type: String,
-    },
     course: [
         {
             chapter:String,

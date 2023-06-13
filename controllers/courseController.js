@@ -1,9 +1,10 @@
 const courseModel = require('../models/courseModel')
 const categoryModal = require('../models/categoryModel')
-
+const tutorCollection = require('../models/tutorModel')
 const uploadCourse = async (req, res, next) => {
     try {
-        const { name, about, duration, language, price, description, category,course } = req.body.courseData
+        const tutorId = req.decoded.tutorId
+        const { name, about, duration, language, price, description, category, course } = req.body.courseData
         const imageURL = req.body.imageURL
         const coure = courseModel.create({
             name,
@@ -14,10 +15,13 @@ const uploadCourse = async (req, res, next) => {
             description,
             category,
             imageURL,
-            teacher: req.decoded.tutorId,
+            teacher: tutorId,
             category,
             course
-        }).then(() => res.status(200).json({ status: true }))
+        }).then(async () => {
+            await tutorCollection.findByIdAndUpdate(tutorId, { $inc: { totalCourses: 1 } });
+            res.status(200).json({ status: true })
+        })
             .catch(err => res.status(500).json({ message: "failed to upload course" }))
     } catch (error) {
         next(error)
@@ -54,9 +58,9 @@ const courseList = async (req, res, next) => {
     }
 }
 
-const courseView = async (req, res, next) => {
+const courseDetails = async (req, res, next) => {
     try {
-        await courseModel.findOne({ _id: req.params.courseId }, { isApproved: 0, status: 0, createdAt: 0 }).populate({
+        await courseModel.findOne({ _id: req.params.courseId }, { isApproved: 0, status: 0, createdAt: 0, 'course.lessons.videoUrl': 0, 'course.lessons._id': 0 }).populate({
             path: 'teacher',
             select: '-_id name about'
         }).lean().then((response) => {
@@ -69,10 +73,35 @@ const courseView = async (req, res, next) => {
     }
 }
 
+const watchCourse = async (req, res, next) => {
+    try {
+        const courseId = req.params.courseId
+        await courseModel.findOne({ _id: courseId }, { isApproved: 0, status: 0, createdAt: 0, 'course.lessons._id': 0 }).populate({
+            path: 'teacher',
+            select: '-_id name about'
+        }).lean().then((response) => {
+            res.status(200).json({ status: true, courseDetails: response });
+        }).catch((err) => {
+            res.status(500).json({ status: false, message: "something went wrong " });
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
+// const deleteCourse = async (req, res, next) => {
+//     try {
+//         const courseId = req.params.courseId
+//         await 
+//     } catch (error) {
+//         next(error)
+//     }
+// }
 
 module.exports = {
     uploadCourse,
     homePageCourses,
     courseList,
-    courseView
+    courseDetails,
+    watchCourse,
 }

@@ -28,6 +28,10 @@ const userSchema = Schema({
         type: Number,
         default: 0
     },
+    loginWithGoogle: {
+        type: Boolean,
+        default: false,
+    },
     status: {
         type: Boolean,
         default: true

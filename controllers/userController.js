@@ -39,7 +39,8 @@ const verifyOtp = async (req, res, next) => {
                         email,
                         phone,
                         password,
-                        image
+                        image,
+                        loginWithGoogle:true
                     })
             }
             let token = jwt.sign({
