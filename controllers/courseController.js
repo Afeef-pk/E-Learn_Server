@@ -106,14 +106,18 @@ const watchCourse = async (req, res, next) => {
     }
 }
 
-// const deleteCourse = async (req, res, next) => {
-//     try {
-//         const courseId = req.params.courseId
-//         await 
-//     } catch (error) {
-//         next(error)
-//     }
-// }
+const deleteCourse = async (req, res, next) => {
+    try {
+        const courseId = req.params.courseId
+        courseModel.deleteOne({ _id: courseId }).then(()=>{
+            res.status(200).json({ sucess: true, message:"course deleted"})
+        }).catch(()=>{
+            res.status(501).json({ sucess: false, message:"failed to delete"})
+        })
+    } catch (error) {
+        next(error)
+    }
+}
 
 module.exports = {
     uploadCourse,
@@ -121,4 +125,5 @@ module.exports = {
     courseList,
     courseDetails,
     watchCourse,
+    deleteCourse
 }
