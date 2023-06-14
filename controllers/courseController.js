@@ -44,12 +44,29 @@ const homePageCourses = async (req, res, next) => {
 
 const courseList = async (req, res, next) => {
     try {
-        const courseData = await courseModel.find({ status: true }, { isApproved: 0, status: 0, }).populate({
+        const page = parseInt(req.query.page) || 1
+        const size = parseInt(req.query.size) || 2
+        const skip = (page - 1) * size
+        const searchQuery = req.query.searchQuery
+        const category = req.query.category
+        const query = {
+            status: true,
+        };
+        if (searchQuery) {
+            query.$or = [
+                { name: { $regex: searchQuery, $options: 'i' } },
+            ];
+        }
+        if (category) {
+            query.category = category
+        }
+        const categoryData = await categoryModal.find().limit(4)
+        const total = await courseModel.countDocuments(query)
+        await courseModel.find(query, { isApproved: 0, status: 0, }).populate({
             path: 'teacher',
             select: '-_id name about'
-        }).lean().sort({ createdAt: -1 })
-        await categoryModal.find().limit(4).then((response) => {
-            res.status(200).json({ courseData, categoryData: response })
+        }).lean().sort({ createdAt: -1 }).skip(skip).limit(size).then((response) => {
+            res.status(200).json({ courseData:response, categoryData, total, page, size })
         }).catch((err) => {
             res.status(500).json({ status: false, message: "something went wrong " });
         })
