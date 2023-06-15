@@ -81,9 +81,9 @@ const courseDetails = async (req, res, next) => {
             path: 'teacher',
             select: '-_id name about'
         }).lean().then((response) => {
-            res.status(200).json({ status: true, courseDetails: response });
+            res.status(200).json({  courseDetails: response });
         }).catch((err) => {
-            res.status(500).json({ status: false, message: "something went wrong " });
+            res.status(500).json({ message: "something went wrong " });
         })
     } catch (error) {
         next(error)
