@@ -45,7 +45,6 @@ const createPayment = async (req, res, next) => {
         res.redirect(`${process.env.CLIENT_URL}/course-payment/${courseId}`);
         }
     } catch (error) {
-        console.log('catched');
         next(error);
     }
 }
@@ -53,16 +52,13 @@ const createPayment = async (req, res, next) => {
 const verifyPayment = async (req, res,next) => {
     try {
         const orderId = req.params.orderId 
-        console.log(orderId);
         const order = await orderSchema.findById(orderId);
-        console.log(order);
         if (order) {
             orderSchema.findByIdAndUpdate(orderId,{
                 $set:{
                     status:true
                 }
             }).then((response)=>{
-                console.log(response);
                 res.redirect(`${process.env.CLIENT_URL}/order-success`);
             }).catch((err)=>{
                 console.log(err);
