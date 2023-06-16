@@ -20,10 +20,10 @@ const OrderSchema = new mongoose.Schema({
         ref: 'Tutor',
         required: true,
     },
-    // address: {
-    //     type:{},
-    //     required: true,
-    // },
+    address: {
+        type:Object,
+        required: true,
+    },
     purchaseDate: {
         type: Date,
         required: true,

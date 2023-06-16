@@ -3,7 +3,7 @@ const userRoute= express.Router()
 const {updateUserProfile,getUserProfile,userAuthentication,verifyUserAndOtpSend,verifyOtp,handleUserLogin} = require('../controllers/userController')
 const {userAuth} = require('../middlewares/userAuth')
 const {homePageCourses,courseList,courseDetails,watchCourse} = require('../controllers/courseController')
-const {createPayment,verifyPayment,cancelOrder} = require('../controllers/paymentController')
+const {applyCoupon,createPayment,verifyPayment,cancelOrder} = require('../controllers/paymentController')
 
 userRoute.get('/userAuth',userAuth,userAuthentication)
 
@@ -25,6 +25,7 @@ userRoute.get('/course-details/:courseId',courseDetails)
 userRoute.get('/course/view/:courseId',watchCourse)
 
 //payment 
+userRoute.post('/apply-coupon',applyCoupon)
 userRoute.post('/create-checkout-session',userAuth,createPayment)
 userRoute.get('/verifyPayment/:orderId', verifyPayment);
 userRoute.get('/cancel-payment/:orderId', cancelOrder);
