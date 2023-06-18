@@ -18,7 +18,7 @@ userRoute.get('/course',courseList)
 
 //user profile
 userRoute.get('/profile',userAuth,getUserProfile)
-userRoute.post('/update/profile',userAuth,updateUserProfile)
+userRoute.put('/update/profile',userAuth,updateUserProfile)
 
 //course details
 userRoute.get('/course-details/:courseId',courseDetails)

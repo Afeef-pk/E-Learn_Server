@@ -165,6 +165,7 @@ const updateUserProfile = async (req, res) => {
         next(error)
     }
 }
+
 module.exports = {
     handleUserLogin,
     verifyUserAndOtpSend,

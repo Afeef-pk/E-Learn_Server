@@ -11,7 +11,7 @@ const applyCoupon = async (req, res, next) => {
         if (coupon) {
             res.status(200).json({ discount: coupon.discount, message: "Succesfully applied coupon" })
         } else {
-            res.status(200).json({discount:false, message: "Invalid coupon code" })
+            res.status(200).json({ discount: false, message: "Invalid coupon code" })
         }
     } catch (error) {
         next(error)
@@ -22,16 +22,21 @@ const applyCoupon = async (req, res, next) => {
 const createPayment = async (req, res, next) => {
     try {
         const userId = req.decoded.userId
-        const courseId = req.body.courseId
+        const { courseId, address, pincode, couponCode } = req.body
         const user = await userCollection.findById(userId);
         const course = await courseCollection.findById(courseId);
+        let total = course.price
+        const coupon = await couponSchema.findOne({ couponCode })
+        if (coupon) {
+            total = Math.ceil(total-(total/coupon.discount))
+        }
         if (course) {
             const newOrder = new orderSchema({
-                total: course.price,
+                total,
                 course: courseId,
                 user: userId,
                 teacher: course.teacher,
-                address: { line1: req.body.address, pincode: req.body.pincode },
+                address: { line1: address, pincode },
                 purchaseDate: Date.now(),
             })
             newOrder.save().then(async (order) => {
@@ -45,7 +50,7 @@ const createPayment = async (req, res, next) => {
                                     images: [course.imageURL],
                                     description: course.about
                                 },
-                                unit_amount: course.price * 100,
+                                unit_amount: total * 100,
                             },
                             quantity: 1,
                         }

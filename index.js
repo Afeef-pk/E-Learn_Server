@@ -12,7 +12,6 @@ dbConnect()
 
 app.use(cors({
     origin: process.env.CLIENT_URL,
-    methods: ['GET', 'POST','PATCH','DELETE'],
     credentials: true
 }))
 
