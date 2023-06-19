@@ -5,6 +5,8 @@ const jwt = require("jsonwebtoken")
 const userCollection = require('../models/userModel')
 const tutorCollection = require('../models/tutorModel')
 const courseCollection = require('../models/courseModel')
+const orderCollection = require('../models/orderModel')
+const couponCollection = require('../models/couponModel')
 const Category = require('../models/categoryModel')
 
 const handleAdminLogin = async (req, res, next) => {
@@ -44,7 +46,9 @@ const dashboard = async (req, res, next) => {
         const userCount = await userCollection.count()
         const tutorCount = await tutorCollection.count()
         const courseCount = await courseCollection.count()
-        res.status(200).json({ userCount, tutorCount, courseCount })
+        const orderCount = await orderCollection.count({ status: true })
+        const couponCount = await couponCollection.count()
+        res.status(200).json({ userCount, tutorCount, courseCount, orderCount, couponCount })
     } catch (error) {
         next(error)
     }
@@ -126,7 +130,7 @@ const courseManage = async (req, res, next) => {
         const newStatus = !course.status
         await courseCollection.findByIdAndUpdate({ _id: courseId }, { status: newStatus }).then(() => {
             return res.status(200).json({ message: "Status updated" })
-        }).catch(()=>{
+        }).catch(() => {
             return res.status(501).json({ message: "failed to update" })
         })
     } catch (error) {
@@ -164,6 +168,23 @@ const addCategory = async (req, res, next) => {
         next(error)
     }
 }
+
+const getTransctions = (req, res, next) => {
+    try {
+        orderCollection.find({}, {status:0,_id:0,created_at:0,updatedAt:0})
+        .populate({path:'course',select:'name  -_id'})
+        .populate({path:'teacher',select:'name  -_id'})
+        .populate({path:'user',select:'name image email -_id'})
+        .then((response)=>{
+            res.status(200).json({ orders:response })
+        }).catch((error) => {
+            res.status(501).json({ message:"Unable to fetch the data" })
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
 module.exports = {
     handleAdminLogin,
     dashboard,
@@ -175,5 +196,6 @@ module.exports = {
     getCourse,
     courseManage,
     courseViewAndApprove,
-    addCategory
+    addCategory,
+    getTransctions
 }

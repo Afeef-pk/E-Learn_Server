@@ -1,6 +1,6 @@
 const express = require('express')
 const adminRoute = express.Router()
-const {addCategory, handleAdminLogin, dashboard, usersList, updateUserStatus, tutorsList, updateTutorStatus, tutorViewAndApprove, getCourse, courseViewAndApprove,courseManage } = require('../controllers/adminController')
+const {addCategory, handleAdminLogin, dashboard, usersList, updateUserStatus, tutorsList, updateTutorStatus, tutorViewAndApprove, getCourse, courseViewAndApprove,courseManage, getTransctions } = require('../controllers/adminController')
 const { adminAuth } = require('../middlewares/adminAuth')
 
 adminRoute.post('/', handleAdminLogin)
@@ -15,5 +15,6 @@ adminRoute.get('/courses', getCourse)
 adminRoute.post('/course/view', courseViewAndApprove)
 adminRoute.post('/course/manage', courseManage)
 adminRoute.post('/category', addCategory)
+adminRoute.get('/transctions',getTransctions)
 
 module.exports = adminRoute

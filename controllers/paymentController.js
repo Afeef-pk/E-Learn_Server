@@ -28,7 +28,7 @@ const createPayment = async (req, res, next) => {
         let total = course.price
         const coupon = await couponSchema.findOne({ couponCode })
         if (coupon) {
-            total = Math.ceil(total-(total/coupon.discount))
+            total = Math.ceil(total - (total / coupon.discount))
         }
         if (course) {
             const newOrder = new orderSchema({
@@ -79,8 +79,11 @@ const verifyPayment = async (req, res, next) => {
                 $set: {
                     status: true
                 }
-            }).then((response) => {
-                res.redirect(`${process.env.CLIENT_URL}/order-success`);
+            }).then(() => {
+                userCollection.findByIdAndUpdate(order.user, { $inc: { totalPurchased: 1 } })
+                    .then(() => {
+                        res.redirect(`${process.env.CLIENT_URL}/order-success`);
+                    })
             }).catch((err) => {
                 console.log(err);
             })

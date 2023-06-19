@@ -129,7 +129,7 @@ const userAuthentication = async (req, res, next) => {
 const getUserProfile = async (req, res) => {
     try {
         const { userId } = req.decoded
-        await userCollection.findOne({ _id: userId }, { password: 0 }).then((response) => {
+        await userCollection.findOne({ _id: userId }, { password: 0 ,_id:0}).then((response) => {
             return res.status(200).json({ user: response })
         }).catch((error) => {
             return res.status(500).json({ message: "error fetching data" })
@@ -137,7 +137,6 @@ const getUserProfile = async (req, res) => {
     } catch (error) {
         next(error)
     }
-
 }
 
 const updateUserProfile = async (req, res) => {
@@ -155,8 +154,8 @@ const updateUserProfile = async (req, res) => {
                 return res.status(401).json({ message: "Incorrect Old Password" })
             }
         }
-        const { firstName, lastName, email, image } = req.body
-        await userCollection.findOneAndUpdate({ _id: userId }, { firstName, lastName, email, image }).then((response) => {
+        const { name, lastName, email, image } = req.body
+        await userCollection.findOneAndUpdate({ _id: userId }, { name, lastName, email, image }).then((response) => {
             return res.status(200).json({ user: response, message: "Profile Updated Successfully" })
         }).catch((error) => {
             return res.status(500).json({ message: "error updating profile" })

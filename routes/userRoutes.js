@@ -2,9 +2,10 @@ const express = require('express')
 const userRoute= express.Router()
 const {updateUserProfile,getUserProfile,userAuthentication,verifyUserAndOtpSend,verifyOtp,handleUserLogin} = require('../controllers/userController')
 const {userAuth} = require('../middlewares/userAuth')
-const {homePageCourses,courseList,courseDetails,watchCourse} = require('../controllers/courseController')
+const {getUserCourses,homePageCourses,courseList,courseDetails,watchCourse} = require('../controllers/courseController')
 const {applyCoupon,createPayment,verifyPayment,cancelOrder} = require('../controllers/paymentController')
 
+//user Authentication
 userRoute.get('/userAuth',userAuth,userAuthentication)
 
 //signup user
@@ -19,6 +20,8 @@ userRoute.get('/course',courseList)
 //user profile
 userRoute.get('/profile',userAuth,getUserProfile)
 userRoute.put('/update/profile',userAuth,updateUserProfile)
+userRoute.get('/enrolled-course',userAuth,getUserCourses)
+
 
 //course details
 userRoute.get('/course-details/:courseId',courseDetails)
