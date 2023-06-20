@@ -2,7 +2,6 @@ const courseModel = require('../models/courseModel')
 const categoryModal = require('../models/categoryModel')
 const tutorCollection = require('../models/tutorModel')
 const orderCollection = require('../models/orderModel')
-const { response } = require('express')
 
 const uploadCourse = async (req, res, next) => {
     try {
@@ -94,6 +93,23 @@ const courseDetails = async (req, res, next) => {
     }
 }
 
+const isCourseEnrolled = (req,res,next) => {
+    try {
+        const userId = req.decoded.userId
+        orderCollection.findOne({ user:userId, course: req.params.courseId,status:true }).then((response) => {
+            if (response) {
+                res.status(200).json({ enrolled: true, message: "Course already  exist" });
+            } else {
+                res.status(200).json({ enrolled: false, message: "Course not  exist" });
+            }
+        }).catch(()=>{
+            res.status(200).json({ enrolled: false, message: "Course not  exist" });
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
 const watchCourse = async (req, res, next) => {
     try {
         const courseId = req.params.courseId
@@ -148,5 +164,6 @@ module.exports = {
     courseDetails,
     watchCourse,
     deleteCourse,
-    getUserCourses
+    getUserCourses,
+    isCourseEnrolled
 }

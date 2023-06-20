@@ -88,11 +88,19 @@ const tutorsList = async (req, res, next) => {
 
 const updateTutorStatus = async (req, res, next) => {
     try {
-        const { tutorId } = req.query
-        const tutor = await tutorCollection.findById(tutorId)
-        const status = !tutor.status
-        await tutorCollection.findByIdAndUpdate({ _id: tutorId }, { status })
-        res.status(200).json({ message: "Status updated!" })
+        const { tutorId,approve } = req.query
+        if(approve ==='true'){
+            await tutorCollection.findByIdAndUpdate({ _id: tutorId }, { isApproved: true, status:true })
+            return res.status(200).json({ message: "Successfully Approved" })
+        }else{
+            const tutor = await tutorCollection.findById(tutorId)
+            const status = !tutor.status
+            await tutorCollection.findByIdAndUpdate({ _id: tutorId }, { status }).then(()=>{
+               return res.status(200).json({ message: "Status updated!" })
+            }).catch(()=>{
+                res.status(501).json({ message: "server error" })
+            })
+        }
     } catch (error) {
         next(error)
     }
@@ -175,6 +183,7 @@ const getTransctions = (req, res, next) => {
         .populate({path:'course',select:'name  -_id'})
         .populate({path:'teacher',select:'name  -_id'})
         .populate({path:'user',select:'name image email -_id'})
+        .sort({createdAt:-1})
         .then((response)=>{
             res.status(200).json({ orders:response })
         }).catch((error) => {

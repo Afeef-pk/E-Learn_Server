@@ -2,7 +2,8 @@ const express = require('express')
 const userRoute= express.Router()
 const {updateUserProfile,getUserProfile,userAuthentication,verifyUserAndOtpSend,verifyOtp,handleUserLogin} = require('../controllers/userController')
 const {userAuth} = require('../middlewares/userAuth')
-const {getUserCourses,homePageCourses,courseList,courseDetails,watchCourse} = require('../controllers/courseController')
+const {checkUserEnrolledCourse} = require('../middlewares/checkCourseEnrolled')
+const {getUserCourses,homePageCourses,courseList,courseDetails,isCourseEnrolled,watchCourse} = require('../controllers/courseController')
 const {applyCoupon,createPayment,verifyPayment,cancelOrder} = require('../controllers/paymentController')
 
 //user Authentication
@@ -25,7 +26,8 @@ userRoute.get('/enrolled-course',userAuth,getUserCourses)
 
 //course details
 userRoute.get('/course-details/:courseId',courseDetails)
-userRoute.get('/course/view/:courseId',watchCourse)
+userRoute.get('/is-course-enrolled/:courseId', userAuth, isCourseEnrolled);
+userRoute.get('/course/view/:courseId',userAuth,checkUserEnrolledCourse,watchCourse)
 
 //payment 
 userRoute.post('/apply-coupon',applyCoupon)
