@@ -1,8 +1,7 @@
 const express = require('express');
 const app = express()
 const cors = require('cors')
-const path = require('path')
-const env = require('dotenv').config()
+require('dotenv').config()
 const dbConnect = require('./config/dbConnect')
 const userRouter = require("./routes/userRoutes")
 const tutorRouter = require("./routes/tutorRoutes")

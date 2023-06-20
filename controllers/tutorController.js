@@ -46,7 +46,8 @@ const handleTutorLogin = async (req, res, next) => {
                 })
                 return res.status(200).json({
                     message: "Signin Successful...",
-                    token
+                    token,
+                    name:tutor.name
                 })
             } else {
                 return res.status(200).json({ message: "invalid email or password" })
