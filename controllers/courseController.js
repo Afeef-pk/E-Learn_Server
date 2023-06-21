@@ -48,7 +48,7 @@ const homePageCourses = async (req, res, next) => {
 const courseList = async (req, res, next) => {
     try {
         const page = parseInt(req.query.page) || 1
-        const size = parseInt(req.query.size) || 2
+        const size = parseInt(req.query.size) || 3
         const skip = (page - 1) * size
         const searchQuery = req.query.searchQuery
         const category = req.query.category

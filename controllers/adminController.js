@@ -48,7 +48,12 @@ const dashboard = async (req, res, next) => {
         const courseCount = await courseCollection.count()
         const orderCount = await orderCollection.count({ status: true })
         const couponCount = await couponCollection.count()
-        res.status(200).json({ userCount, tutorCount, courseCount, orderCount, couponCount })
+        const orders= await orderCollection.find()
+        .populate('course','name  -_id')
+        .populate('teacher','name  -_id')
+        .populate('user','name image email -_id')
+        .sort({createdAt:-1})
+        res.status(200).json({ userCount, tutorCount, courseCount, orderCount, couponCount,orders })
     } catch (error) {
         next(error)
     }
@@ -56,8 +61,23 @@ const dashboard = async (req, res, next) => {
 
 const usersList = async (req, res, next) => {
     try {
-        const users = await userCollection.find({}, { password: 0 })
-        res.status(200).json({ users })
+        const page = parseInt(req.query.page) || 1
+        const size = 2
+        const skip = (page - 1) * size
+        const searchQuery = req.query.searchQuery
+        const query = {};
+        if (searchQuery) {
+            query.$or = [
+                { name: { $regex: searchQuery, $options: 'i' } },
+            ];
+        }
+        const total = await userCollection.countDocuments()
+        await userCollection.find(query, { password:0,_id:0 })
+        .lean().sort({ createdAt: 1 }).skip(skip).limit(size).then((response) => {
+            res.status(200).json({ users: response, total, page, size })
+        }).catch((err) => {
+            res.status(500).json({ status: false, message: "something went wrong " });
+        })
     } catch (error) {
         next(error)
     }
@@ -77,10 +97,23 @@ const updateUserStatus = async (req, res, next) => {
 
 const tutorsList = async (req, res, next) => {
     try {
-        const approvedTutors = await tutorCollection.find({ isApproved: true }, { password: 0 });
-        const unapprovedTutors = await tutorCollection.find({ isApproved: false }, { password: 0 });
-        const tutors = unapprovedTutors.concat(approvedTutors);
-        res.status(200).json({ tutors });
+        const page = parseInt(req.query.page) || 1
+        const size = 2
+        const skip = (page - 1) * size
+        const searchQuery = req.query.searchQuery
+        const query = {};
+        if (searchQuery) {
+            query.$or = [
+                { name: { $regex: searchQuery, $options: 'i' } },
+            ];
+        }
+        const total = await tutorCollection.countDocuments()
+        await tutorCollection.find(query, { password:0 })
+        .lean().sort({ isApproved: 1 }).skip(skip).limit(size).then((response) => {
+            res.status(200).json({ tutors: response, total, page, size })
+        }).catch((err) => {
+            res.status(500).json({ status: false, message: "something went wrong " });
+        })
     } catch (error) {
         next(error)
     }
@@ -177,16 +210,23 @@ const addCategory = async (req, res, next) => {
     }
 }
 
-const getTransctions = (req, res, next) => {
+const getTransctions = async(req, res, next) => {
     try {
-        orderCollection.find({}, {status:0,_id:0,created_at:0,updatedAt:0})
-        .populate({path:'course',select:'name  -_id'})
-        .populate({path:'teacher',select:'name  -_id'})
-        .populate({path:'user',select:'name image email -_id'})
+        const page = parseInt(req.query.page) || 1
+        const total = await orderCollection.countDocuments()
+        const size = total < 5 ? total :5
+        const skip = (page - 1) * size        
+        orderCollection.find()
+        .populate('course','name  -_id')
+        .populate('teacher','name  -_id')
+        .populate('user','name image email -_id')
         .sort({createdAt:-1})
-        .then((response)=>{
-            res.status(200).json({ orders:response })
-        }).catch((error) => {
+        .skip(skip)
+        .limit(size)
+        .lean()
+        .then((response) => {
+            res.status(200).json({ orders: response, total, page, size })
+        }).catch((err) => {
             res.status(501).json({ message:"Unable to fetch the data" })
         })
     } catch (error) {

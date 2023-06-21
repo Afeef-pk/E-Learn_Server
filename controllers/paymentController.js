@@ -4,21 +4,6 @@ const userCollection = require('../models/userModel')
 const courseCollection = require('../models/courseModel')
 const couponSchema = require('../models/couponModel')
 
-const applyCoupon = async (req, res, next) => {
-    try {
-        const couponCode = req.body.couponCode
-        const coupon = await couponSchema.findOne({ couponCode })
-        if (coupon) {
-            res.status(200).json({ discount: coupon.discount, message: "Succesfully applied coupon" })
-        } else {
-            res.status(200).json({ discount: false, message: "Invalid coupon code" })
-        }
-    } catch (error) {
-        next(error)
-    }
-
-}
-
 const createPayment = async (req, res, next) => {
     try {
         const userId = req.decoded.userId
@@ -107,4 +92,4 @@ const cancelOrder = async (req, res, next) => {
     }
 }
 
-module.exports = { applyCoupon, createPayment, verifyPayment, cancelOrder }
+module.exports = { createPayment, verifyPayment, cancelOrder }
