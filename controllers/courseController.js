@@ -80,10 +80,9 @@ const courseList = async (req, res, next) => {
 
 const courseDetails = async (req, res, next) => {
     try {
-        await courseModel.findOne({ _id: req.params.courseId }, { isApproved: 0, status: 0, createdAt: 0, 'course.lessons.videoUrl': 0, 'course.lessons._id': 0 }).populate({
-            path: 'teacher',
-            select: '-_id name about'
-        }).lean().then((response) => {
+        await courseModel.findOne({ _id: req.params.courseId }, { isApproved: 0, status: 0, createdAt: 0, 'course.lessons.videoUrl': 0, 'course.lessons._id': 0 })
+        .populate('teacher','-_id name about image')
+        .lean().then((response) => {
             res.status(200).json({ courseDetails: response });
         }).catch((err) => {
             res.status(500).json({ message: "something went wrong " });

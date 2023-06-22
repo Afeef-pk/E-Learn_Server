@@ -34,14 +34,17 @@ const CourseSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    pilotVideo: {
+        type: String,
+    },
     course: [
         {
-            chapter:String,
-            lessons:[
+            chapter: String,
+            lessons: [
                 {
-                    chapterName:String,
-                    lessonName:String,
-                    videoUrl:String 
+                    chapterName: String,
+                    lessonName: String,
+                    videoUrl: String
                 }
             ]
         }
