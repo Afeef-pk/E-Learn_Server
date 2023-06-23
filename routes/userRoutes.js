@@ -4,7 +4,7 @@ const {updateUserProfile,getUserProfile,userAuthentication,verifyUserAndOtpSend,
 const {userAuth} = require('../middlewares/userAuth')
 const {checkUserEnrolledCourse} = require('../middlewares/checkCourseEnrolled')
 const {getUserCourses,homePageCourses,courseList,courseDetails,isCourseEnrolled,watchCourse} = require('../controllers/courseController')
-const {createPayment,verifyPayment,cancelOrder} = require('../controllers/paymentController')
+const {createPayment,verifyPayment,cancelOrder, userPuchaseHistory} = require('../controllers/paymentController')
 const {applyCoupon} = require('../controllers/couponController')
 
 //user Authentication
@@ -23,6 +23,7 @@ userRoute.get('/course',courseList)
 userRoute.get('/profile',userAuth,getUserProfile)
 userRoute.put('/update/profile',userAuth,updateUserProfile)
 userRoute.get('/enrolled-course',userAuth,getUserCourses)
+userRoute.get('/purchase-history',userAuth,userPuchaseHistory)
 
 
 //course details

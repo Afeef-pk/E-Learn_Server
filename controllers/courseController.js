@@ -2,15 +2,18 @@ const courseModel = require('../models/courseModel')
 const categoryModal = require('../models/categoryModel')
 const tutorCollection = require('../models/tutorModel')
 const orderCollection = require('../models/orderModel')
+const userCollection = require('../models/userModel')
 
 const uploadCourse = async (req, res, next) => {
     try {
         const tutorId = req.decoded.tutorId
         const { name, about, duration, language, price, description, category, course } = req.body.courseData
         const imageURL = req.body.imageURL
+        const pilotVideo = req.body.pilotVideoURL
         const coure = courseModel.create({
             name,
             about,
+            pilotVideo,
             duration,
             language,
             price,
@@ -32,14 +35,20 @@ const uploadCourse = async (req, res, next) => {
 
 const homePageCourses = async (req, res, next) => {
     try {
-        await courseModel.find({ status: true }, { isApproved: 0, status: 0, }).populate({
-            path: 'teacher',
-            select: '-_id name'
-        }).lean().sort({ createdAt: -1 }).limit(4).then((response) => {
-            return res.status(200).json({ courseData: response })
-        }).catch((err) => {
-            res.status(500).json({ status: false, message: "something went wrong " });
-        })
+        const limit =5
+        const skip = req.query.size * limit - limit
+        const total = await courseModel.countDocuments({ status: true })
+        courseModel.find({ status: true }, { isApproved: 0, status: 0, })
+            .populate('teacher', '-_id name')
+            .lean()
+            .sort({ createdAt: -1 })
+            .limit(limit)
+            .skip(skip)
+            .then((response) => {
+                return res.status(200).json({ courseData: response, total })
+            }).catch((err) => {
+                res.status(500).json({ status: false, message: "something went wrong " });
+            })
     } catch (error) {
         next(error)
     }
@@ -81,27 +90,27 @@ const courseList = async (req, res, next) => {
 const courseDetails = async (req, res, next) => {
     try {
         await courseModel.findOne({ _id: req.params.courseId }, { isApproved: 0, status: 0, createdAt: 0, 'course.lessons.videoUrl': 0, 'course.lessons._id': 0 })
-        .populate('teacher','-_id name about image')
-        .lean().then((response) => {
-            res.status(200).json({ courseDetails: response });
-        }).catch((err) => {
-            res.status(500).json({ message: "something went wrong " });
-        })
+            .populate('teacher', '-_id name about image')
+            .lean().then((response) => {
+                res.status(200).json({ courseDetails: response });
+            }).catch((err) => {
+                res.status(500).json({ message: "something went wrong " });
+            })
     } catch (error) {
         next(error)
     }
 }
 
-const isCourseEnrolled = (req,res,next) => {
+const isCourseEnrolled = (req, res, next) => {
     try {
         const userId = req.decoded.userId
-        orderCollection.findOne({ user:userId, course: req.params.courseId,status:true }).then((response) => {
+        orderCollection.findOne({ user: userId, course: req.params.courseId, status: true }).then((response) => {
             if (response) {
                 res.status(200).json({ enrolled: true, message: "Course already  exist" });
             } else {
                 res.status(200).json({ enrolled: false, message: "Course not  exist" });
             }
-        }).catch(()=>{
+        }).catch(() => {
             res.status(200).json({ enrolled: false, message: "Course not  exist" });
         })
     } catch (error) {
@@ -141,9 +150,15 @@ const deleteCourse = (req, res, next) => {
 const getUserCourses = async (req, res, next) => {
     try {
         const userId = req.decoded.userId
-        orderCollection.find({ user: userId, status: true }, { course: 1, _id: 0 })
-            .populate({ path: 'teacher', select: '-_id name' })
-            .populate({ path: 'course', select: '_id name imageURL' })
+        userCollection.findOne({ _id: userId, status: true }, { enrolledCourses: 1, _id: 0 })
+            .populate({
+                path: 'enrolledCourses',
+                select: '_id name imageURL',
+                populate: {
+                  path: 'teacher',
+                  select: '-_id name'
+                }
+              })
             .lean()
             .then((response) => {
                 res.status(200).json({ userCourses: response })

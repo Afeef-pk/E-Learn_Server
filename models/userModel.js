@@ -24,7 +24,7 @@ const userSchema = Schema({
     image: {
         type: String,
     },
-    totalPurchased: {
+    totalEnrolled: {
         type: Number,
         default: 0
     },
@@ -35,7 +35,11 @@ const userSchema = Schema({
     status: {
         type: Boolean,
         default: true
-    }
+    },
+    enrolledCourses: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Course'
+      }]
 },
     { timestamps: true }
 )

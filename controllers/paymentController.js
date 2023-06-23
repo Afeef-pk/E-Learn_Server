@@ -61,11 +61,9 @@ const verifyPayment = async (req, res, next) => {
         const order = await orderSchema.findById(orderId);
         if (order) {
             orderSchema.findByIdAndUpdate(orderId, {
-                $set: {
-                    status: true
-                }
+                $set: { status: true }
             }).then(() => {
-                userCollection.findByIdAndUpdate(order.user, { $inc: { totalPurchased: 1 } })
+                userCollection.findByIdAndUpdate(order.user, { $inc: {totalEnrolled: 1}, $push: { enrolledCourses: order.course } })
                     .then(() => {
                         res.redirect(`${process.env.CLIENT_URL}/order-success`);
                     })
@@ -92,4 +90,22 @@ const cancelOrder = async (req, res, next) => {
     }
 }
 
-module.exports = { createPayment, verifyPayment, cancelOrder }
+const userPuchaseHistory = async (req, res, next) => {
+    try {
+        const userId = req.decoded.userId
+        orderSchema.find({ user: userId, status: true }, {purchaseDate:1,total:1, course: 1, _id: 0 })
+            .populate('teacher', '-_id name')
+            .populate('course', '_id name imageURL')
+            .lean()
+            .then((response) => {
+                res.status(200).json({ orders: response })
+            })
+            .catch((error) => {
+                res.status(501).json({ message: "server error" })
+            })
+    } catch (error) {
+        next(error)
+    }
+}
+
+module.exports = { createPayment, verifyPayment, cancelOrder,userPuchaseHistory }

@@ -53,6 +53,7 @@ const dashboard = async (req, res, next) => {
         .populate('teacher','name  -_id')
         .populate('user','name image email -_id')
         .sort({createdAt:-1})
+        .limit(5)
         res.status(200).json({ userCount, tutorCount, courseCount, orderCount, couponCount,orders })
     } catch (error) {
         next(error)
@@ -214,7 +215,7 @@ const getTransctions = async(req, res, next) => {
     try {
         const page = parseInt(req.query.page) || 1
         const total = await orderCollection.countDocuments()
-        const size = total < 5 ? total :5
+        const size = total < 5 ? total :3
         const skip = (page - 1) * size        
         orderCollection.find()
         .populate('course','name  -_id')
