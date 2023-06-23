@@ -96,6 +96,7 @@ const userPuchaseHistory = async (req, res, next) => {
         orderSchema.find({ user: userId, status: true }, {purchaseDate:1,total:1, course: 1, _id: 0 })
             .populate('teacher', '-_id name')
             .populate('course', '_id name imageURL')
+            .sort({createdAt:-1})
             .lean()
             .then((response) => {
                 res.status(200).json({ orders: response })
