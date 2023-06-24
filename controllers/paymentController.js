@@ -63,7 +63,7 @@ const verifyPayment = async (req, res, next) => {
             orderSchema.findByIdAndUpdate(orderId, {
                 $set: { status: true }
             }).then(() => {
-                userCollection.findByIdAndUpdate(order.user, { $inc: {totalEnrolled: 1}, $push: { enrolledCourses: order.course } })
+                userCollection.findByIdAndUpdate(order.user, { $inc: { totalEnrolled: 1 }, $push: { enrolledCourses: { course: order.course, completed: 0 } } })
                     .then(() => {
                         res.redirect(`${process.env.CLIENT_URL}/order-success`);
                     })
@@ -93,10 +93,10 @@ const cancelOrder = async (req, res, next) => {
 const userPuchaseHistory = async (req, res, next) => {
     try {
         const userId = req.decoded.userId
-        orderSchema.find({ user: userId, status: true },{teacher:0})
-        .populate('course', '_id name imageURL')
-        .populate('user', '-_id name email')
-            .sort({createdAt:-1})
+        orderSchema.find({ user: userId, status: true }, { teacher: 0 })
+            .populate('course', '_id name imageURL')
+            .populate('user', '-_id name email')
+            .sort({ createdAt: -1 })
             .lean()
             .then((response) => {
                 res.status(200).json({ orders: response })
@@ -109,4 +109,4 @@ const userPuchaseHistory = async (req, res, next) => {
     }
 }
 
-module.exports = { createPayment, verifyPayment, cancelOrder,userPuchaseHistory }
+module.exports = { createPayment, verifyPayment, cancelOrder, userPuchaseHistory }

@@ -35,7 +35,7 @@ const uploadCourse = async (req, res, next) => {
 
 const homePageCourses = async (req, res, next) => {
     try {
-        const limit =5
+        const limit = 5
         const skip = req.query.size * limit - limit
         const total = await courseModel.countDocuments({ status: true })
         courseModel.find({ status: true }, { isApproved: 0, status: 0, })
@@ -152,22 +152,31 @@ const getUserCourses = async (req, res, next) => {
         const userId = req.decoded.userId
         userCollection.findOne({ _id: userId, status: true }, { enrolledCourses: 1, _id: 0 })
             .populate({
-                path: 'enrolledCourses',
+                path: 'enrolledCourses.course',
                 select: '_id name imageURL',
                 populate: {
-                  path: 'teacher',
-                  select: '-_id name'
+                    path: 'teacher',
+                    select: '-_id name'
                 }
-              })
+            })
             .lean()
             .then((response) => {
-                res.status(200).json({ userCourses: response })
+                res.status(200).json({ enrolledCourses: response.enrolledCourses });
             })
             .catch((error) => {
                 res.status(501).json({ message: "server error" })
             })
     } catch (error) {
         next(error)
+    }
+}
+
+const updateProgress = async (req, res, next) => {
+    try {
+        const userId = req.decoded
+        const update = await userCollection.findByIdAndUpdate(userId,{$set:{}})
+    } catch (error) {
+
     }
 }
 
@@ -179,5 +188,6 @@ module.exports = {
     watchCourse,
     deleteCourse,
     getUserCourses,
-    isCourseEnrolled
+    isCourseEnrolled,
+    updateProgress
 }

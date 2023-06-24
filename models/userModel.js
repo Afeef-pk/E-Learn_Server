@@ -6,7 +6,7 @@ const userSchema = Schema({
         type: String,
         required: true
     },
-    lastName:{
+    lastName: {
         type: String
     },
     email: {
@@ -36,10 +36,18 @@ const userSchema = Schema({
         type: Boolean,
         default: true
     },
-    enrolledCourses: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Course'
-      }]
+    enrolledCourses: [
+        {
+            course: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'Course'
+            },
+            completed: {
+                type: Number,
+                default: 0
+            }
+        }
+    ]
 },
     { timestamps: true }
 )
