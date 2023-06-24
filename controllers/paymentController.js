@@ -93,9 +93,9 @@ const cancelOrder = async (req, res, next) => {
 const userPuchaseHistory = async (req, res, next) => {
     try {
         const userId = req.decoded.userId
-        orderSchema.find({ user: userId, status: true }, {purchaseDate:1,total:1, course: 1, _id: 0 })
-            .populate('teacher', '-_id name')
-            .populate('course', '_id name imageURL')
+        orderSchema.find({ user: userId, status: true },{teacher:0})
+        .populate('course', '_id name imageURL')
+        .populate('user', '-_id name email')
             .sort({createdAt:-1})
             .lean()
             .then((response) => {
