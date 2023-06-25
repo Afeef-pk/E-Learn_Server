@@ -1,1 +1,1 @@
-GET http://localhost:3001/admin/course/view
+GET http://localhost:3001/verifyPayment/6497cd0b0d1c8edc493e7b62

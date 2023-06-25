@@ -60,16 +60,23 @@ const verifyPayment = async (req, res, next) => {
         const orderId = req.params.orderId
         const order = await orderSchema.findById(orderId);
         if (order) {
-            orderSchema.findByIdAndUpdate(orderId, {
-                $set: { status: true }
-            }).then(() => {
-                userCollection.findByIdAndUpdate(order.user, { $inc: { totalEnrolled: 1 }, $push: { enrolledCourses: { course: order.course, completed: 0 } } })
-                    .then(() => {
-                        res.redirect(`${process.env.CLIENT_URL}/order-success`);
-                    })
-            }).catch((err) => {
-                console.log(err);
-            })
+            const course = await courseCollection.findById(order.course, { course: 1, _id: 0 })
+            const allLessons = course.course.reduce((lessons, chapter) => {
+                const chapterLessons = chapter.lessons.map((lesson) => {
+                    return {
+                        videoId: lesson._id,
+                        lastPlaytime: null,
+                        completed: false,
+                    };
+                });
+                return [...lessons, ...chapterLessons];
+            }, []);
+            console.log(allLessons);
+            await orderSchema.findByIdAndUpdate(orderId, { $set: { status: true } })
+            userCollection.findByIdAndUpdate(order.user, { $inc: { totalEnrolled: 1 }, $push: { enrolledCourses: { course: order.course,videos:allLessons } } })
+                .then(() => {
+                    res.redirect(`${process.env.CLIENT_URL}/order-success`);
+                })
         } else {
             res.redirect(`${process.env.CLIENT_URL}/cancel-payment/${order.courseId}`);
         }

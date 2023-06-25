@@ -29,7 +29,7 @@ userRoute.get('/purchase-history',userAuth,userPuchaseHistory)
 //course details
 userRoute.get('/course-details/:courseId',courseDetails)
 userRoute.get('/is-course-enrolled/:courseId', userAuth, isCourseEnrolled);
-userRoute.get('/course/view/:courseId',userAuth,checkUserEnrolledCourse,watchCourse)
+
 
 //payment 
 userRoute.post('/apply-coupon',applyCoupon)
@@ -38,6 +38,8 @@ userRoute.get('/verifyPayment/:orderId', verifyPayment);
 userRoute.get('/cancel-payment/:orderId', cancelOrder);
 
 
-//video progress
-userRoute.get('/update-progress',userAuth,updateProgress)
+//course video watch
+userRoute.get('/course/view/:courseId',userAuth,checkUserEnrolledCourse,watchCourse)
+userRoute.patch('/update-progress',userAuth,updateProgress)
+
 module.exports=userRoute

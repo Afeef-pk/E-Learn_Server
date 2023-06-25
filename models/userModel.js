@@ -38,16 +38,35 @@ const userSchema = Schema({
     },
     enrolledCourses: [
         {
-            course: {
+          course: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Course',
+          },
+          videos: [
+            {
+              videoId: {
                 type: mongoose.Schema.Types.ObjectId,
-                ref: 'Course'
+              },
+              lastPlaytime:{
+                type: String,
+                default: null
+              },
+              completed: {
+                type: Boolean,
+                default: false,
+              },
             },
-            completed: {
-                type: Number,
-                default: 0
-            }
-        }
-    ]
+          ],
+          lastPlayedVideo: {
+            type: String,
+            default: null,
+          },
+          totalCompleted:{
+            type: Number,
+            default:0
+          }
+        },
+      ],
 },
     { timestamps: true }
 )

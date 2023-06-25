@@ -121,7 +121,7 @@ const isCourseEnrolled = (req, res, next) => {
 const watchCourse = async (req, res, next) => {
     try {
         const courseId = req.params.courseId
-        await courseModel.findOne({ _id: courseId }, { isApproved: 0, status: 0, createdAt: 0, 'course.lessons._id': 0 }).populate({
+        await courseModel.findOne({ _id: courseId }, { isApproved: 0, status: 0, createdAt: 0 }).populate({
             path: 'teacher',
             select: '-_id name about'
         }).lean().then((response) => {
@@ -173,10 +173,41 @@ const getUserCourses = async (req, res, next) => {
 
 const updateProgress = async (req, res, next) => {
     try {
-        const userId = req.decoded
-        const update = await userCollection.findByIdAndUpdate(userId,{$set:{}})
+        const { userId } = req.decoded;
+        const { courseId, videoId } = req.body;
+        const courseProgress = await userCollection.findOneAndUpdate(
+            {
+                _id: userId,
+                "enrolledCourses.course": courseId,
+                "enrolledCourses.videos.videoId": videoId
+            },
+            {
+                $set: {
+                    "enrolledCourses.$[courseElem].videos.$[videoElem].completed": true
+                }
+            },
+            {
+                arrayFilters: [
+                    { "courseElem.course": courseId },
+                    { "videoElem.videoId": videoId }
+                ],
+                new: true
+            }
+        );
+        if (courseProgress) {
+            const completedVideosCount = courseProgress.enrolledCourses
+                .find(course => course.course.toString() === courseId)
+                .videos.filter(video => video.completed).length;
+            const totalVideosCount = courseProgress.enrolledCourses
+                .find(course => course.course.toString() === courseId)
+                .videos.length;
+            const percentage = Math.floor((completedVideosCount / totalVideosCount) * 100);
+            courseProgress.enrolledCourses.find(course => course.course.toString() === courseId).totalCompleted = percentage;
+            await courseProgress.save();
+        }
+        res.status(200).json({})
     } catch (error) {
-
+next(error)
     }
 }
 
