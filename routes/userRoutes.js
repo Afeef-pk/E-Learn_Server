@@ -6,6 +6,8 @@ const {checkUserEnrolledCourse} = require('../middlewares/checkCourseEnrolled')
 const {updateProgress,getUserCourses,homePageCourses,courseList,courseDetails,isCourseEnrolled,watchCourse} = require('../controllers/courseController')
 const {createPayment,verifyPayment,cancelOrder, userPuchaseHistory} = require('../controllers/paymentController')
 const {applyCoupon} = require('../controllers/couponController')
+const { createGroup, getAllGroups, joinGroup, getJoinedGroups } = require('../controllers/groupController')
+const { createMessage } = require('../controllers/messageController')
 
 //user Authentication
 userRoute.get('/userAuth',userAuth,userAuthentication)
@@ -42,4 +44,12 @@ userRoute.get('/cancel-payment/:orderId', cancelOrder);
 userRoute.get('/course/view/:courseId',userAuth,checkUserEnrolledCourse,watchCourse)
 userRoute.patch('/update-progress',userAuth,updateProgress)
 
+//group 
+userRoute.post('/create-group',createGroup)
+userRoute.get('/all-groups',getAllGroups)
+userRoute.put('/join-group',userAuth,joinGroup)
+userRoute.get('/joined-groups',userAuth,getJoinedGroups)
+
+//message 
+userRoute.get('/messages',createMessage)
 module.exports=userRoute

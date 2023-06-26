@@ -67,6 +67,10 @@ const userSchema = Schema({
           }
         },
       ],
+      groups: {
+        type: [mongoose.Schema.Types.ObjectId],
+        ref: 'Groups',
+    }
 },
     { timestamps: true }
 )
