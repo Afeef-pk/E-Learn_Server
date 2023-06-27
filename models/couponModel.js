@@ -8,6 +8,9 @@ const CouponSchema = new mongoose.Schema({
     discount:{
         type:Number,
         required: true
+    },
+    validTill:{
+        type:Date
     }
 })
 

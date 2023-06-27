@@ -17,8 +17,8 @@ io.on('connection',(socket)=>{
     //send message
     socket.on('sendMessage',async({userId,groupId,text})=>{
         console.log('send Message');
-        let sender = await User.find({ _id: userId }, { firstName: 1, picture:1});
-        io.to(groupId).emit('receiveMessage', { sender: sender[0], groupId, text });
+        let sender = await User.findOne({ _id: userId }, { name: 1, image:1});
+        io.to(groupId).emit('receiveMessage', { sender: sender, groupId, text });
     })
 
 
