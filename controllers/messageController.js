@@ -31,3 +31,25 @@ module.exports.getMessages = async (req, res,next) => {
         next(err)
     }
 }
+
+module.exports.sendImage = async (req, res,next) => {
+    try {
+        const image = req.body.image
+        if (image) {
+            const newMessage = new Message({
+                group: req.body.group,
+                sender: req.decoded.userId,
+                type: "file",
+                text: req.body.text,
+                image
+            })
+            const savedMessage = await newMessage.save();
+            res.status(200).json({ group: savedMessage.group, sender: { _id: savedMessage.sender },text:savedMessage.text, type: savedMessage.type, image: savedMessage.image });
+        } else {
+            throw new Error("Image is not provided")
+        }
+
+    } catch (err) {
+        next(err)
+    }
+}

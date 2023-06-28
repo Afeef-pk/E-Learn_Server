@@ -71,7 +71,6 @@ const verifyPayment = async (req, res, next) => {
                 });
                 return [...lessons, ...chapterLessons];
             }, []);
-            console.log(allLessons);
             await orderSchema.findByIdAndUpdate(orderId, { $set: { status: true } })
             userCollection.findByIdAndUpdate(order.user, { $inc: { totalEnrolled: 1 }, $push: { enrolledCourses: { course: order.course,videos:allLessons } } })
                 .then(() => {

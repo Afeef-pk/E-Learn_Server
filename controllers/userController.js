@@ -98,7 +98,8 @@ const handleUserLogin = async (req, res, next) => {
                 })
                 return res.status(200).json({
                     message: "Signin Successful...",
-                    token
+                    token,
+                    userId:user._id
                 })
             } else {
                 res.status(200).json({ message: "invalid email or password" })

@@ -7,7 +7,7 @@ const {updateProgress,getUserCourses,homePageCourses,courseList,courseDetails,is
 const {createPayment,verifyPayment,cancelOrder, userPuchaseHistory} = require('../controllers/paymentController')
 const {applyCoupon} = require('../controllers/couponController')
 const { createGroup, getAllGroups, joinGroup, getJoinedGroups } = require('../controllers/groupController')
-const { createMessage, getMessages } = require('../controllers/messageController')
+const { createMessage, getMessages, sendImage } = require('../controllers/messageController')
 
 //user Authentication
 userRoute.get('/userAuth',userAuth,userAuthentication)
@@ -53,5 +53,6 @@ userRoute.get('/joined-groups',userAuth,getJoinedGroups)
 //message 
 userRoute.post('/messages',userAuth,createMessage)
 userRoute.get('/messages/:groupId',userAuth,getMessages)
+userRoute.post('/messages/send/file/image', userAuth, sendImage)
 
 module.exports=userRoute

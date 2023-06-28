@@ -158,7 +158,7 @@ const tutorViewAndApprove = async (req, res, next) => {
 
 const getCourse = async (req, res, next) => {
     try {
-        const course = await courseCollection.find()
+        const course = await courseCollection.find().sort({createdAt:-1})
         res.status(200).json({ course })
     } catch (error) {
         next(error)
