@@ -18,15 +18,15 @@ io.on('connection',(socket)=>{
     socket.on('sendMessage',async({userId,groupId,text})=>{
         console.log('send Message');
         let sender = await User.findOne({ _id: userId }, { name: 1, image:1});
-        io.to(groupId).emit('receiveMessage', { sender: sender, groupId, text });
+        io.to(groupId).emit('receiveMessage', { sender, groupId, text });
     })
 
 
     //send image
-    socket.on("sendImage", async (data) => {
+    socket.on("sendFile", async ({groupId,sender,type,file,text}) => {
         console.log("sendImage");
-        let sender = await User.find({ _id: data.sender }, { firstName: 1, picture:1 });
-        io.to(data.group).emit('receiveMessage', { sender: sender[0], groupId: data.group,type:data.type,image:data.image, text: data.text });
+        let user = await User.findOne({ _id: sender }, { name: 1, image:1 });
+        io.to(groupId).emit('receiveMessage', { sender:user, text ,type,file,groupId});
     });
 
     // Clean up when the client disconnects
