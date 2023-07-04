@@ -28,7 +28,7 @@ module.exports = {
     },
     joinGroup: async (req, res, next) => {
         try {
-            const { userId } = req.decoded;
+            const userId = req.userId
             const groupId = req.body.groupId;
             const user = await userModel.findOneAndUpdate(
                 { _id: userId },
@@ -52,7 +52,7 @@ module.exports = {
     },
     getJoinedGroups:(req,res,next)=>{
         try{
-            const {userId} = req.decoded
+            const userId = req.userId
             if(userId){
                 userModel.findById(userId,{groups:1,_id:0}).populate('groups').then((response)=>{
                     res.status(200).json({groups:response.groups})

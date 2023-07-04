@@ -9,7 +9,7 @@ tutorRoute.post('/signin',handleTutorLogin)
 tutorRoute.get('/tutorauth',tutorAuth,tutorAuthVerify)
 tutorRoute.post('/upload/course',tutorAuth,uploadCourse)
 tutorRoute.get('/all-course/',tutorAuth,getTutorCourses)
-tutorRoute.delete('/delete/:courseId',deleteCourse)
+tutorRoute.delete('/delete/:courseId',tutorAuth,deleteCourse)
 tutorRoute.get('/profile',tutorAuth,getTutorProfile)
 tutorRoute.put('/profile',tutorAuth,updateTutorProfile)
 

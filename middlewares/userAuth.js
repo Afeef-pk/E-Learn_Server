@@ -9,9 +9,11 @@ module.exports.userAuth = (req, res, next) => {
       jwt.verify(token, process.env.JWT_SECERT, (err, decoded) => {
         if (err) {
           res.status(401).json({ status: false, message: "Session expired please login" })
-        } else {
-          req.decoded = decoded
+        } else if (decoded.exp * 1000 > Date.now() && decoded.role === 'user') {
+          req.userId = decoded.userId
           next()
+        } else {
+          res.status(401).json({ status: false, message: "Session expired please login" })
         }
       })
     }

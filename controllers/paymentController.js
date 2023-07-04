@@ -6,7 +6,7 @@ const couponSchema = require('../models/couponModel')
 
 const createPayment = async (req, res, next) => {
     try {
-        const userId = req.decoded.userId
+        const userId = req.userId
         const { courseId, address, pincode, couponCode } = req.body
         const user = await userCollection.findById(userId);
         const course = await courseCollection.findById(courseId);
@@ -98,7 +98,7 @@ const cancelOrder = async (req, res, next) => {
 
 const userPuchaseHistory = async (req, res, next) => {
     try {
-        const userId = req.decoded.userId
+        const userId = req.userId
         orderSchema.find({ user: userId, status: true }, { teacher: 0 })
             .populate('course', '_id name imageURL')
             .populate('user', '-_id name email')

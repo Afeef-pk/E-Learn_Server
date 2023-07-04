@@ -45,7 +45,8 @@ const verifyOtp = async (req, res, next) => {
             }
             let token = jwt.sign({
                 userId: user._id,
-                userName: user.name
+                userName: user.name,
+                role:'user'
             }, jwtSecert, {
                 expiresIn: "1d",
             })
@@ -92,7 +93,8 @@ const handleUserLogin = async (req, res, next) => {
             if (passwordMatch) {
                 let token = jwt.sign({
                     userId: user._id,
-                    userName: user.name
+                    userName: user.name,
+                    role:'user'
                 }, jwtSecert, {
                     expiresIn: "1d",
                 })
@@ -114,9 +116,8 @@ const handleUserLogin = async (req, res, next) => {
 
 const userAuthentication = async (req, res, next) => {
     try {
-        const decoded = req.decoded
-        const user = await userCollection.findOne({ _id: decoded.userId, status: true },{image:1,_id:0})
-        if (decoded.exp * 1000 > Date.now() && user) {
+        const user = await userCollection.findOne({ _id: req.userId, status: true },{image:1,_id:0})
+        if (user) {
             return res.status(200).json({ status: true,user })
         } else {
             return res.status(401).json({ status: false, message: "Session expired!, Please Signin." })
@@ -129,8 +130,7 @@ const userAuthentication = async (req, res, next) => {
 
 const getUserProfile = async (req, res) => {
     try {
-        const { userId } = req.decoded
-        await userCollection.findOne({ _id: userId }, { password: 0 ,_id:0}).then((response) => {
+        await userCollection.findOne({ _id: req.userId}, { password: 0 ,_id:0}).then((response) => {
             return res.status(200).json({ user: response })
         }).catch((error) => {
             return res.status(500).json({ message: "error fetching data" })
@@ -142,7 +142,7 @@ const getUserProfile = async (req, res) => {
 
 const updateUserProfile = async (req, res) => {
     try {
-        const { userId } = req.decoded
+        const  userId  = req.userId
         if (req.body.newPassword) {
             const { oldPassword, newPassword } = req.body
             const user = await userCollection.findById(userId)

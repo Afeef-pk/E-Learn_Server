@@ -6,7 +6,7 @@ const userCollection = require('../models/userModel')
 
 const uploadCourse = async (req, res, next) => {
     try {
-        const tutorId = req.decoded.tutorId
+        const tutorId = req.tutorId
         const { name, about, duration, language, price, description, category, course } = req.body.courseData
         const imageURL = req.body.imageURL
         const pilotVideo = req.body.pilotVideoURL
@@ -103,7 +103,7 @@ const courseDetails = async (req, res, next) => {
 
 const isCourseEnrolled = (req, res, next) => {
     try {
-        const userId = req.decoded.userId
+        const userId = req.userId
         orderCollection.findOne({ user: userId, course: req.params.courseId, status: true }).then((response) => {
             if (response) {
                 res.status(200).json({ enrolled: true, message: "Course already  exist" });
@@ -149,7 +149,7 @@ const deleteCourse = (req, res, next) => {
 
 const getUserCourses = async (req, res, next) => {
     try {
-        const userId = req.decoded.userId
+        const userId = req.userId
         userCollection.findOne({ _id: userId, status: true }, { enrolledCourses: 1, _id: 0 })
             .populate({
                 path: 'enrolledCourses.course',
@@ -173,7 +173,7 @@ const getUserCourses = async (req, res, next) => {
 
 const updateProgress = async (req, res, next) => {
     try {
-        const { userId } = req.decoded;
+        const userId = req.userId
         const { courseId, videoId } = req.body;
         const courseProgress = await userCollection.findOneAndUpdate(
             {
@@ -207,7 +207,7 @@ const updateProgress = async (req, res, next) => {
         }
         res.status(200).json({})
     } catch (error) {
-next(error)
+        next(error)
     }
 }
 

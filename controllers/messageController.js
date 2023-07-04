@@ -3,7 +3,7 @@ const User = require('../models/userModel')
 
 module.exports.createMessage = async (req, res, next) => {
     try {
-        const { userId } = req.decoded
+        const userId = req.userId
         const { text, group } = req.body;
         const newMessage = new Message({
             group,
@@ -40,13 +40,13 @@ module.exports.sendImage = async (req, res, next) => {
         if (file) {
             const newMessage = new Message({
                 group: req.body.group,
-                sender: req.decoded.userId,
+                sender: req.userId,
                 type: req.body.type,
                 text: req.body.text,
                 file
             })
             const savedMessage = await newMessage.save();
-            const user = await User.findById(req.decoded.userId,{name:1,image:1})
+            const user = await User.findById(req.userId,{name:1,image:1})
             res.status(200).json({ groupId: savedMessage.group, sender: user, text: savedMessage.text, type: savedMessage.type, file: savedMessage.file });
         } else {
             throw new Error("Image is not provided")

@@ -40,7 +40,8 @@ const handleTutorLogin = async (req, res, next) => {
             if (passwordMatch) {
                 let token = jwt.sign({
                     tutorId: tutor._id,
-                    tutorName: tutor.name
+                    tutorName: tutor.name,
+                    role:'tutor'
                 }, jwtSecert, {
                     expiresIn: "1d",
                 })
@@ -62,9 +63,8 @@ const handleTutorLogin = async (req, res, next) => {
 
 const tutorAuthVerify = async (req, res, next) => {
     try {
-        const decoded = req.decoded
-        const tutor = await tutorCollection.findOne({ _id: decoded.tutorId, status: true })
-        if (decoded.exp * 1000 > Date.now() && tutor) {
+        const tutor = await tutorCollection.findOne({ _id: req.tutorId, status: true })
+        if (tutor) {
             return res.status(200).json({ status: true, tutorName:tutor.name})
         } else {
             return res.status(401).json({ status: false, message: "Session expired!, Please Signin." })
@@ -76,8 +76,7 @@ const tutorAuthVerify = async (req, res, next) => {
 
 const getTutorCourses = async (req, res, next) => {
     try {
-        const decoded = req.decoded
-          await courseModel.find({ teacher:decoded.tutorId }).then((response)=>{
+          await courseModel.find({ teacher:req.tutorId }).then((response)=>{
             return res.status(200).json({ courses:response})
         }).catch((error) => {
             return res.status(501).json({message:"server error"})
@@ -89,8 +88,7 @@ const getTutorCourses = async (req, res, next) => {
 
 const getTutorProfile = async (req,res,next)=>{
     try {
-        const tutorId = req.decoded.tutorId
-        tutorCollection.findOne({_id :tutorId},{password:0,_id:0}).then((response)=>{
+        tutorCollection.findOne({_id :req.tutorId},{password:0,_id:0}).then((response)=>{
             res.status(200).json({tutor:response})
         }).catch(()=>{
             res.status(501).json({message:"Failed to profile"})
@@ -102,9 +100,8 @@ const getTutorProfile = async (req,res,next)=>{
 
 const updateTutorProfile = async (req, res) => {
     try {
-        const { tutorId } = req.decoded
         const { image,name, email, about } = req.body
-        await tutorCollection.findOneAndUpdate({ _id: tutorId }, { name, email, image,about }).then((response) => {
+        await tutorCollection.findOneAndUpdate({ _id: req.tutorId }, { name, email, image,about }).then((response) => {
             return res.status(200).json({ tutor: response, message: "Profile Updated Successfully" })
         }).catch((error) => {
             return res.status(500).json({ message: "error updating profile" })

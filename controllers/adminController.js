@@ -18,7 +18,8 @@ const handleAdminLogin = async (req, res, next) => {
             if (isMatch) {
                 let token = jwt.sign({
                     adminId: admin._id,
-                    adminName: admin.name
+                    adminName: admin.name,
+                    role:'admin'
                 }, jwtSecert, {
                     expiresIn: "1d",
                 })
@@ -35,6 +36,19 @@ const handleAdminLogin = async (req, res, next) => {
             return res.status(200).json({
                 message: "Invalid Credentials"
             })
+        }
+    } catch (error) {
+        next(error)
+    }
+}
+
+const adminAuthentication = async (req, res, next) => {
+    try {
+        const admin = await adminCollection.findById(req.adminId )
+        if (admin) {
+            return res.status(200).json({ status: true })
+        } else {
+            return res.status(401).json({ status: false})
         }
     } catch (error) {
         next(error)
@@ -237,6 +251,7 @@ const getTransctions = async(req, res, next) => {
 
 module.exports = {
     handleAdminLogin,
+    adminAuthentication,
     dashboard,
     usersList,
     updateUserStatus,
@@ -247,5 +262,5 @@ module.exports = {
     courseManage,
     courseViewAndApprove,
     addCategory,
-    getTransctions
+    getTransctions,
 }
