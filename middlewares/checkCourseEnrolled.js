@@ -2,7 +2,7 @@ const Order =require('../models/orderModel')
 
 module.exports.checkUserEnrolledCourse=async(req,res,next)=>{
     try{
-        let enrolled = await Order.findOne({ user: req.decoded.userId, course :req.params.courseId,status:true});
+        let enrolled = await Order.findOne({ user: req.userId, course :req.params.courseId,status:true});
         if(enrolled){
             next();
         }else{
