@@ -37,7 +37,7 @@ module.exports = {
             groupModel.findByIdAndUpdate(groupId, { $addToSet: { members: userId } })
               .then((group) => {
                 if (group) {
-                  res.status(200).json({ message: "Successfully joined" });
+                  res.status(200).json({ message: "Successfully joined",group });
                 } else {
                   res.status(404).json({ message: "Group not found" });
                 }

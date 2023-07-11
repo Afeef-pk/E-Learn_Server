@@ -77,7 +77,7 @@ const courseList = async (req, res, next) => {
         await courseModel.find(query, { isApproved: 0, status: 0, }).populate({
             path: 'teacher',
             select: '-_id name about'
-        }).lean().sort({ createdAt: -1 }).skip(skip).limit(size).then((response) => {
+        }).lean().sort({ createdAt: -1 }).skip(skip).limit(size).then((response) => { 
             res.status(200).json({ courseData: response, categoryData, total, page, size })
         }).catch((err) => {
             res.status(500).json({ status: false, message: "something went wrong " });
