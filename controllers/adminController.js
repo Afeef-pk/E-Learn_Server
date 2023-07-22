@@ -77,7 +77,7 @@ const dashboard = async (req, res, next) => {
 const usersList = async (req, res, next) => {
     try {
         const page = parseInt(req.query.page) || 1
-        const size = 2
+        const size = 10
         const skip = (page - 1) * size
         const searchQuery = req.query.searchQuery
         const query = {};
@@ -113,7 +113,7 @@ const updateUserStatus = async (req, res, next) => {
 const tutorsList = async (req, res, next) => {
     try {
         const page = parseInt(req.query.page) || 1
-        const size = 2
+        const size = 10
         const skip = (page - 1) * size
         const searchQuery = req.query.searchQuery
         const query = {};
