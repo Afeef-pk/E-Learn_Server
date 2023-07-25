@@ -1,13 +1,11 @@
 {
-  "name": "e-learning",
-  "version": "1.0.0",
-  "description": "e-leaning website ",
+  "name": "learnifyx",
+  "version": "2.0.0",
+  "description": "e-leaning website for the students",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js",
-    "dev" :"nodemon index.js"
-
+    "dev": "nodemon index.js"
   },
   "author": "afeef pk",
   "license": "ISC",
@@ -21,5 +19,8 @@
     "socket.io": "^4.7.0",
     "stripe": "^12.9.0",
     "twilio": "^4.11.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
   }
 }

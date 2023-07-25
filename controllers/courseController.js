@@ -4,7 +4,7 @@ const tutorCollection = require('../models/tutorModel')
 const orderCollection = require('../models/orderModel')
 const userCollection = require('../models/userModel')
 const Review = require('../models/reviewModel')
-const reviewModel = require('../models/reviewModel')
+
 
 const uploadCourse = async (req, res, next) => {
     try {
@@ -113,10 +113,6 @@ const courseList = async (req, res, next) => {
 
 const courseDetails = async (req, res, next) => {
     try {
-        const ordered = await orderCollection.findOne({$and:[{course:req.params.courseId},{user:req.userId}]})
-        const reviewed = await reviewModel.findOne({$and:[{course:req.params.courseId},{user:req.userId}]})
-        const reviewPossible = !!ordered && !reviewed;
-        console.log(req.params.courseId+req.userId);
         await courseModel.findOne({ _id: req.params.courseId }, { isApproved: 0, status: 0, createdAt: 0, 'course.lessons.videoUrl': 0, 'course.lessons._id': 0 })
             .populate('teacher', '-_id name about image').populate({
                 path: 'reviews',
@@ -127,7 +123,7 @@ const courseDetails = async (req, res, next) => {
                 }
             })
             .lean().then((response) => {
-                res.status(200).json({ courseDetails: response,reviewPossible });
+                res.status(200).json({ courseDetails: response });
             }).catch((err) => {
                 next(err)
             })

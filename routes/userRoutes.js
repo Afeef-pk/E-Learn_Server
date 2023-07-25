@@ -8,7 +8,7 @@ const {createPayment,verifyPayment,cancelOrder, userPuchaseHistory} = require('.
 const {applyCoupon} = require('../controllers/couponController')
 const { createGroup, getAllGroups, joinGroup, getJoinedGroups } = require('../controllers/groupController')
 const { createMessage, getMessages, sendImage } = require('../controllers/messageController')
-const {reviewCourse} = require('../controllers/ReviewController')
+const {reviewCourse, reviewCheckStatus} = require('../controllers/ReviewController')
 
 //user Authentication
 userRoute.get('/userAuth',userAuth,userAuthentication)
@@ -34,6 +34,7 @@ userRoute.get('/is-course-enrolled/:courseId', userAuth, isCourseEnrolled);
 
 //course Review
 userRoute.post('/review-course',userAuth,reviewCourse)
+userRoute.get('/review-status/:courseId',userAuth,reviewCheckStatus)
 
 //payment 
 userRoute.post('/apply-coupon',applyCoupon)
