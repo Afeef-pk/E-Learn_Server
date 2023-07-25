@@ -3,6 +3,8 @@ const categoryModal = require('../models/categoryModel')
 const tutorCollection = require('../models/tutorModel')
 const orderCollection = require('../models/orderModel')
 const userCollection = require('../models/userModel')
+const Review = require('../models/reviewModel')
+const reviewModel = require('../models/reviewModel')
 
 const uploadCourse = async (req, res, next) => {
     try {
@@ -77,10 +79,32 @@ const courseList = async (req, res, next) => {
         await courseModel.find(query, { isApproved: 0, status: 0, }).populate({
             path: 'teacher',
             select: '-_id name about'
-        }).lean().sort({ createdAt: -1 }).skip(skip).limit(size).then((response) => { 
-            res.status(200).json({ courseData: response, categoryData, total, page, size })
+        }).lean().sort({ createdAt: -1 }).skip(skip).limit(size).then(async (response) => {
+            const courseIds = response.map(course => course._id);
+            const courseRatings = await Review.aggregate([
+                {
+                    $match: { course: { $in: courseIds } }
+                },
+                {
+                    $group: {
+                        _id: "$course",
+                        averageRating: { $avg: "$rating" },
+                        totalReviews: { $sum: 1 }
+                    }
+                }
+            ]);
+            const courseRatingsMap = new Map();
+            courseRatings.forEach(rating => courseRatingsMap.set(rating._id.toString(), {
+                averageRating: rating.averageRating,
+                totalReviews: rating.totalReviews
+              }));
+            const coursesWithRating = response.map(course => ({
+                ...course,
+                rating: courseRatingsMap.get(course._id.toString()) || {averageRating:0,totalReviews:0}
+            }));
+            res.status(200).json({ courseData: coursesWithRating, categoryData, total, page, size })
         }).catch((err) => {
-            res.status(500).json({ status: false, message: "something went wrong " });
+            next(err)
         })
     } catch (error) {
         next(error)
@@ -89,10 +113,21 @@ const courseList = async (req, res, next) => {
 
 const courseDetails = async (req, res, next) => {
     try {
+        const ordered = await orderCollection.findOne({$and:[{course:req.params.courseId},{user:req.userId}]})
+        const reviewed = await reviewModel.findOne({$and:[{course:req.params.courseId},{user:req.userId}]})
+        const reviewPossible = !!ordered && !reviewed;
+        console.log(req.params.courseId+req.userId);
         await courseModel.findOne({ _id: req.params.courseId }, { isApproved: 0, status: 0, createdAt: 0, 'course.lessons.videoUrl': 0, 'course.lessons._id': 0 })
-            .populate('teacher', '-_id name about image')
+            .populate('teacher', '-_id name about image').populate({
+                path: 'reviews',
+                select: '-_id',
+                populate: {
+                    path: 'reviewedBy',
+                    select: '-_id name createdAt image'
+                }
+            })
             .lean().then((response) => {
-                res.status(200).json({ courseDetails: response });
+                res.status(200).json({ courseDetails: response,reviewPossible });
             }).catch((err) => {
                 next(err)
             })

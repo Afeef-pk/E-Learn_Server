@@ -60,6 +60,10 @@ const CourseSchema = new mongoose.Schema({
         type: Boolean,
         default: false,
     },
+    reviews: {
+        type:[mongoose.Schema.Types.ObjectId],
+        ref:'Review'
+    },
     createdAt: { type: Date, default: Date.now },
 })
 

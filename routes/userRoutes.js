@@ -8,6 +8,7 @@ const {createPayment,verifyPayment,cancelOrder, userPuchaseHistory} = require('.
 const {applyCoupon} = require('../controllers/couponController')
 const { createGroup, getAllGroups, joinGroup, getJoinedGroups } = require('../controllers/groupController')
 const { createMessage, getMessages, sendImage } = require('../controllers/messageController')
+const {reviewCourse} = require('../controllers/ReviewController')
 
 //user Authentication
 userRoute.get('/userAuth',userAuth,userAuthentication)
@@ -27,18 +28,18 @@ userRoute.put('/update/profile',userAuth,updateUserProfile)
 userRoute.get('/enrolled-course',userAuth,getUserCourses)
 userRoute.get('/purchase-history',userAuth,userPuchaseHistory)
 
-
 //course details
 userRoute.get('/course-details/:courseId',courseDetails)
 userRoute.get('/is-course-enrolled/:courseId', userAuth, isCourseEnrolled);
 
+//course Review
+userRoute.post('/review-course',userAuth,reviewCourse)
 
 //payment 
 userRoute.post('/apply-coupon',applyCoupon)
 userRoute.post('/create-checkout-session',userAuth,createPayment)
 userRoute.get('/verifyPayment/:orderId', verifyPayment);
 userRoute.get('/cancel-payment/:orderId', cancelOrder);
-
 
 //course video watch
 userRoute.get('/course/view/:courseId',userAuth,checkUserEnrolledCourse,watchCourse)
